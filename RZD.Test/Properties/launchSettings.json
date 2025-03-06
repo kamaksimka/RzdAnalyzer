@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RZD.Test": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

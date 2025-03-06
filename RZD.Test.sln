@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35303.130
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Test", "RZD.Test\RZD.Test.csproj", "{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72912ABF-FB52-4026-9425-064C8BE7A2BA}
+	EndGlobalSection
+EndGlobal
