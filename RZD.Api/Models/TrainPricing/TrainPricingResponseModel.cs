@@ -1,0 +1,11 @@
+﻿namespace RZD.API.Models.TrainPricing
+{
+    public class TrainPricingResponseModel
+    {
+        public string DestinationCode { get; set; }
+        public string DestinationStationCode { get; set; }
+        public string OriginCode { get; set; }
+        public string OriginStationCode { get; set; }
+        public List<Train> Trains { get; set; }
+    }
+}

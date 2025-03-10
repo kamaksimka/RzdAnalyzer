@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RZD.Scheduler": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

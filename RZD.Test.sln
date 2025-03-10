@@ -3,7 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Test", "RZD.Test\RZD.Test.csproj", "{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.TestConsole", "RZD.Test\RZD.TestConsole.csproj", "{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Database", "RZD.Database\RZD.Database.csproj", "{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Common", "RZD.Common\RZD.Common.csproj", "{656DFBF2-A212-4BE6-A57B-EB0B313AB657}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Integration", "RZD.Api\RZD.Integration.csproj", "{941761DE-16FC-4FE0-B25F-CF1578F3367F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Application", "RZD.Application\RZD.Application.csproj", "{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Scheduler", "RZD.Scheduler\RZD.Scheduler.csproj", "{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +25,26 @@ Global
 		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Release|Any CPU.Build.0 = Release|Any CPU
+		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

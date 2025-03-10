@@ -1,10 +1,6 @@
 ﻿
 
 using System.Text.Json.Nodes;
-using Newtonsoft.Json;
-using RZD.Test;
-using RZD.Test.API;
-using RZD.Test.Models;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 using var httpClient = new HttpClient();
