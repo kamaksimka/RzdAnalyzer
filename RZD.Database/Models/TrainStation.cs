@@ -13,5 +13,8 @@ namespace RZD.Database.Models
         public string Name { get; set; }
         public string Region { get; set; }
         public string ForeignCode { get; set; }
+
+        public long? CityId { get; set; }
+        public virtual City? City { get; set; }
     }
 }

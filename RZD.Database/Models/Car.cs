@@ -3,6 +3,7 @@
     public class Car
     {
         public long Id { get; set; }
+        public bool ArePlacesForBusinessTravelBooking { get; set; }
         public DateTime ArrivalDateTime { get; set; }
         public string AvailabilityIndication { get; set; }
         public string CarNumber { get; set; }
@@ -10,9 +11,7 @@
         public string CarSubType { get; set; }
         public string CarType { get; set; }
         public string DestinationStationCode { get; set; }
-        public List<Discount> Discounts { get; set; }
         public string FreePlaces { get; set; }
-        public List<FreePlacesByCompartment> FreePlacesByCompartments { get; set; }
         public bool HasDynamicPricing { get; set; }
         public bool HasFssBenefit { get; set; }
         public bool HasGenderCabins { get; set; }
@@ -36,10 +35,13 @@
         public bool OnlyNonRefundableTariff { get; set; }
         public string PassengerSpecifyingRules { get; set; }
         public int PlaceQuantity { get; set; }
+        public string PlaceReservationType { get; set; }
         public int PlacesWithConditionalRefundableTariffQuantity { get; set; }
         public string ServiceClass { get; set; }
         public decimal ServiceCost { get; set; }
         public List<string> Services { get; set; }
-        public List<ServicesWithIndication> ServicesWithIndication { get; set; }
+        public string TripDirection { get; set; }
+        public long TrainId { get; set; }
+        public virtual Train Train { get; set; }
     }
 }

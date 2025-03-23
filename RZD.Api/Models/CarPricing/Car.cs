@@ -2,6 +2,7 @@
 {
     public class Car
     {
+        public bool ArePlacesForBusinessTravelBooking { get; set; }
         public DateTime ArrivalDateTime { get; set; }
         public string AvailabilityIndication { get; set; }
         public string CarNumber { get; set; }
@@ -35,10 +36,12 @@
         public bool OnlyNonRefundableTariff { get; set; }
         public string PassengerSpecifyingRules { get; set; }
         public int PlaceQuantity { get; set; }
+        public string PlaceReservationType { get; set; }
         public int PlacesWithConditionalRefundableTariffQuantity { get; set; }
         public string ServiceClass { get; set; }
         public decimal ServiceCost { get; set; }
         public List<string> Services { get; set; }
         public List<ServicesWithIndication> ServicesWithIndication { get; set; }
+        public string TripDirection { get; set; }
     }
 }

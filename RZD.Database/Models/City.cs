@@ -14,6 +14,7 @@ namespace RZD.Database.Models
         public string Region { get; set; }
         public string ForeignCode { get; set; }
         public string ExpressCodes { get; set; }
+        public virtual List<TrainStation> Stations { get; set; }
     }
 
 }

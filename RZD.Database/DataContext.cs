@@ -3,6 +3,7 @@ using RZD.Common.Configs;
 using RZD.Database.Models;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 
 namespace RZD.Database
@@ -13,17 +14,20 @@ namespace RZD.Database
 
         public DbSet<Car> Cars { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<Discount> Discounts { get; set; }
-        public DbSet<FreePlacesByCompartment> FreePlacesByCompartment { get; set; }
         public DbSet<Route> Routes { get; set; }
         public DbSet<RouteStop> RouteStops { get; set; }
-        public DbSet<ServicesWithIndication> ServicesWithIndication { get; set; }
         public DbSet<Train> Trains { get; set; }
         public DbSet<TrainStation> TrainStations { get; set; }
+        public DbSet<EntityType> EntityTypes { get; set; }
+        public DbSet<EntityHistory> EntityHistories { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
-        public DataContext(RzdConfig config)
+        public DataContext(IOptions<RzdConfig> config)
         {
-            _config = config;
+            _config = config.Value;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,7 +37,20 @@ namespace RZD.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<EntityHistory>()
+                .Property(ch => ch.ChangedFields)
+                .HasColumnType("jsonb");
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Roles)
+                .WithMany(x => x.Users)
+                .UsingEntity<UserRole>();
+
+            modelBuilder.Entity<RouteStop>()
+                .HasOne(x => x.Route)
+                .WithMany(x => x.RouteStops)
+                .HasForeignKey(x => x.RouteId);
+
         }
     }
 }

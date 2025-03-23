@@ -8,7 +8,7 @@ namespace RZD.Database.Models
 {
     public class Route
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         #region Key
         public DateTime DepartureDate { get; set; }
@@ -22,6 +22,9 @@ namespace RZD.Database.Models
         public string DestinationName { get; set; }
 
         public virtual List<RouteStop> RouteStops { get; set; }
+
+        public long TrainId { get; set; }
+        public virtual Train Train { get; set; }    
 
 
     }

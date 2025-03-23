@@ -13,16 +13,21 @@ namespace RZD.API.Models.TrainPricing
         public List<string> CarServices { get; set; }
         public DateTime DepartureDateTime { get; set; }
         public int DepartureStopTime { get; set; }
+        public string DestinationStationCode { get; set; }
         public string DisplayTrainNumber { get; set; }
         public string FinalTrainStationCode { get; set; }
         public bool HasCarTransportationCoaches { get; set; }
         public bool HasDynamicPricingCars { get; set; }
         public bool HasTwoStoreyCars { get; set; }
         public string InitialTrainStationCode { get; set; }
+        public bool IsBranded { get; set; }
         public bool IsFromSchedule { get; set; }
+        public bool IsPlaceRangeAllowed {get; set; }
         public bool IsSaleForbidden { get; set; }
         public bool IsSuburban { get; set; }
         public bool IsTicketPrintRequiredForBoarding { get; set; }
+        public bool IsTourPackagePossible { get; set; }
+        public bool IsTrainRouteAllowed { get; set; }
         public bool IsWaitListAvailable { get; set; }
         public DateTime LocalArrivalDateTime { get; set; }
         public DateTime LocalDepartureDateTime { get; set; }
