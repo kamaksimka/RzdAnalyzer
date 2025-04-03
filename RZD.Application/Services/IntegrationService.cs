@@ -141,7 +141,6 @@ namespace RZD.Application.Services
                                 };
                                 await UpdateDbTrainAsync(dbTrain, train);
                                 await _ctx.Trains.AddAsync(dbTrain);
-                                await _ctx.SaveChangesAsync();
                             }
                             else
                             {
@@ -164,10 +163,10 @@ namespace RZD.Application.Services
                                         await _ctx.EntityHistories.AddAsync(entityHistory);
                                     }
 
-                                    await _ctx.SaveChangesAsync();
+                                    
                                 }
                             }
-
+                            await _ctx.SaveChangesAsync();
                             await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime.DateTime, train.TrainNumber, dbTrain.Id);
                         }
                     }
@@ -274,7 +273,6 @@ namespace RZD.Application.Services
                             UpdateDbCarPlace(carPlace, car);
 
                             await _ctx.CarPlaces.AddAsync(carPlace);
-                            await _ctx.SaveChangesAsync();
                         }
                         else
                         {
