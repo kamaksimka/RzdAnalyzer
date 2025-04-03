@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RZD.Application\RZD.Application.csproj" />
     <ProjectReference Include="..\RZD.Database\RZD.Database.csproj" />
   </ItemGroup>
 

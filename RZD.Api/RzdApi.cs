@@ -2,16 +2,17 @@
 using RZD.API.Models.Suggests;
 using RZD.API.Models.TrainPricing;
 using RZD.API.Models.TrainRoute;
+using RZD.Common.Configs;
 
 namespace RZD.API
 {
-    public class RzdApi
+    public class RzdApi:IDisposable
     {
         private readonly RzdClient _client;
 
-        public RzdApi(RzdClient client)
+        public RzdApi(RzdConfig config)
         {
-            _client = client;
+            _client = new RzdClient(config);
         }
 
         public async Task<SuggestsResponseModel> SuggestsAsync(string query)
@@ -29,14 +30,20 @@ namespace RZD.API
             return await _client.SendGetRequestAsync<TrainPricingResponseModel>(RzdApiEndpoints.TrainPricing(origin, destination, departureDate));
         }
 
-        public async Task<CarPricingResponseModel> CarPricingAsync(string origin, string destination, DateTime departureDate)
+        public async Task<CarPricingResponseModel> CarPricingAsync(string origin, string destination, DateTime departureDate, string trainNumber)
         {
             return await _client.SendPostRequestAsync<CarPricingResponseModel>(RzdApiEndpoints.CarPricing,new CarPricingRequestModel()
             {
                 OriginCode = origin,
                 DestinationCode = destination,
-                DepartureDate = departureDate
+                DepartureDate = departureDate,
+                TrainNumber = trainNumber
             });
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RZD.Database;
@@ -12,9 +13,11 @@ using RZD.Database;
 namespace RZD.Database.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250401142315_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("arrival_date_time");
 
                     b.Property<string>("AvailabilityIndication")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("availability_indication");
 
@@ -55,10 +59,12 @@ namespace RZD.Database.Migrations
                         .HasColumnName("car_place_type");
 
                     b.Property<string>("CarSubType")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("car_sub_type");
 
                     b.Property<string>("CarType")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("car_type");
 
@@ -72,6 +78,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("destination_station_code");
 
                     b.Property<string>("FreePlaces")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("free_places");
 
@@ -160,6 +167,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("only_non_refundable_tariff");
 
                     b.Property<string>("PassengerSpecifyingRules")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("passenger_specifying_rules");
 
@@ -168,6 +176,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("place_quantity");
 
                     b.Property<string>("PlaceReservationType")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("place_reservation_type");
 
@@ -176,6 +185,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("places_with_conditional_refundable_tariff_quantity");
 
                     b.Property<string>("ServiceClass")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("service_class");
 
@@ -193,15 +203,15 @@ namespace RZD.Database.Migrations
                         .HasColumnName("train_id");
 
                     b.Property<string>("TripDirection")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("trip_direction");
 
                     b.HasKey("Id")
                         .HasName("pk_cars");
 
-                    b.HasIndex("TrainId", "CarNumber", "CarPlaceType", "CarType", "CarSubType")
-                        .IsUnique()
-                        .HasDatabaseName("ix_cars_train_id_car_number_car_place_type_car_type_car_sub_ty");
+                    b.HasIndex("TrainId")
+                        .HasDatabaseName("ix_cars_train_id");
 
                     b.ToTable("cars", (string)null);
                 });
@@ -269,6 +279,11 @@ namespace RZD.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("changed_at");
 
+                    b.Property<Dictionary<string, object>>("ChangedFields")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("changed_fields");
+
                     b.Property<long>("EntityId")
                         .HasColumnType("bigint")
                         .HasColumnName("entity_id");
@@ -276,16 +291,6 @@ namespace RZD.Database.Migrations
                     b.Property<long>("EntityTypeId")
                         .HasColumnType("bigint")
                         .HasColumnName("entity_type_id");
-
-                    b.Property<string>("FieldName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("field_name");
-
-                    b.Property<string>("OldFieldValue")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("old_field_value");
 
                     b.HasKey("Id")
                         .HasName("pk_entity_histories");
@@ -580,19 +585,18 @@ namespace RZD.Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("departure_stop_time");
 
-                    b.Property<string>("DestinationStationCode")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("destination_station_code");
+                    b.Property<long>("DestinationStationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("destination_station_id");
 
                     b.Property<string>("DisplayTrainNumber")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("display_train_number");
 
-                    b.Property<string>("FinalTrainStationCode")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("final_train_station_code");
+                    b.Property<long>("FinalTrainStationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("final_train_station_id");
 
                     b.Property<bool>("HasCarTransportationCoaches")
                         .HasColumnType("boolean")
@@ -655,16 +659,17 @@ namespace RZD.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("local_departure_date_time");
 
-                    b.Property<string>("OriginStationCode")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("origin_station_code");
+                    b.Property<long>("OriginStationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("origin_station_id");
 
                     b.Property<string>("TrainBrandCode")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("train_brand_code");
 
                     b.Property<string>("TrainDescription")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("train_description");
 
@@ -682,16 +687,21 @@ namespace RZD.Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("trip_distance");
 
-                    b.Property<decimal>("TripDuration")
-                        .HasColumnType("numeric")
+                    b.Property<int>("TripDuration")
+                        .HasColumnType("integer")
                         .HasColumnName("trip_duration");
 
                     b.HasKey("Id")
                         .HasName("pk_trains");
 
-                    b.HasIndex("TrainNumber", "OriginStationCode", "DestinationStationCode", "DepartureDateTime")
-                        .IsUnique()
-                        .HasDatabaseName("ix_trains_train_number_origin_station_code_destination_station");
+                    b.HasIndex("DestinationStationId")
+                        .HasDatabaseName("ix_trains_destination_station_id");
+
+                    b.HasIndex("FinalTrainStationId")
+                        .HasDatabaseName("ix_trains_final_train_station_id");
+
+                    b.HasIndex("OriginStationId")
+                        .HasDatabaseName("ix_trains_origin_station_id");
 
                     b.ToTable("trains", (string)null);
                 });
@@ -859,6 +869,36 @@ namespace RZD.Database.Migrations
                         .HasConstraintName("fk_route_stops_routes_route_id");
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("RZD.Database.Models.Train", b =>
+                {
+                    b.HasOne("RZD.Database.Models.TrainStation", "DestinationStation")
+                        .WithMany()
+                        .HasForeignKey("DestinationStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_trains_train_stations_destination_station_id");
+
+                    b.HasOne("RZD.Database.Models.TrainStation", "FinalTrainStation")
+                        .WithMany()
+                        .HasForeignKey("FinalTrainStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_trains_train_stations_final_train_station_id");
+
+                    b.HasOne("RZD.Database.Models.TrainStation", "OriginStation")
+                        .WithMany()
+                        .HasForeignKey("OriginStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_trains_train_stations_origin_station_id");
+
+                    b.Navigation("DestinationStation");
+
+                    b.Navigation("FinalTrainStation");
+
+                    b.Navigation("OriginStation");
                 });
 
             modelBuilder.Entity("RZD.Database.Models.TrainStation", b =>

@@ -5,15 +5,20 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.TestConsole", "RZD.Test\RZD.TestConsole.csproj", "{5C61572B-6BE7-4BD1-BB61-9A339E7F4649}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Database", "RZD.Database\RZD.Database.csproj", "{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Database", "RZD.Database\RZD.Database.csproj", "{15A94A8B-50DF-42C3-A3E9-A7300CBB1328}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Common", "RZD.Common\RZD.Common.csproj", "{656DFBF2-A212-4BE6-A57B-EB0B313AB657}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Common", "RZD.Common\RZD.Common.csproj", "{656DFBF2-A212-4BE6-A57B-EB0B313AB657}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Integration", "RZD.Api\RZD.Integration.csproj", "{941761DE-16FC-4FE0-B25F-CF1578F3367F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Integration", "RZD.Api\RZD.Integration.csproj", "{941761DE-16FC-4FE0-B25F-CF1578F3367F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RZD.Application", "RZD.Application\RZD.Application.csproj", "{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Application", "RZD.Application\RZD.Application.csproj", "{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Scheduler", "RZD.Scheduler\RZD.Scheduler.csproj", "{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8B2112D-3831-40B6-ADCA-83B514BF33DD}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

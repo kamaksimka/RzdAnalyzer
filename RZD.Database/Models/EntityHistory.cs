@@ -13,8 +13,9 @@ namespace RZD.Database.Models
         public long EntityId { get; set; }
         public long EntityTypeId { get; set; }
 
-        public DateTime ChangedAt { get; set; }
-        public Dictionary<string, object> ChangedFields { get; set; }
+        public DateTimeOffset ChangedAt { get; set; }
+        public string FieldName { get; set; }
+        public string OldFieldValue { get; set; }
 
         public virtual EntityType EntityType { get; set; }
     }

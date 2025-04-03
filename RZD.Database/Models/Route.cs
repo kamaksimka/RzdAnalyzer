@@ -11,7 +11,7 @@ namespace RZD.Database.Models
         public long Id { get; set; }
 
         #region Key
-        public DateTime DepartureDate { get; set; }
+        public DateTimeOffset DepartureDate { get; set; }
         public string TrainNumber { get; set; }
         public string Origin { get; set; }
         public string Destination { get; set; }
@@ -24,8 +24,8 @@ namespace RZD.Database.Models
         public virtual List<RouteStop> RouteStops { get; set; }
 
         public long TrainId { get; set; }
-        public virtual Train Train { get; set; }    
+        public virtual Train Train { get; set; }
 
-
+        public DateTimeOffset CreatedDate { get; set; }
     }
 }

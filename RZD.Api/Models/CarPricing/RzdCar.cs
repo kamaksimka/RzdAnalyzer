@@ -1,18 +1,18 @@
 ﻿namespace RZD.API.Models.CarPricing
 {
-    public class Car
+    public class RzdCar
     {
         public bool ArePlacesForBusinessTravelBooking { get; set; }
-        public DateTime ArrivalDateTime { get; set; }
+        public DateTimeOffset ArrivalDateTime { get; set; }
         public string AvailabilityIndication { get; set; }
         public string CarNumber { get; set; }
         public string CarPlaceType { get; set; }
         public string CarSubType { get; set; }
         public string CarType { get; set; }
         public string DestinationStationCode { get; set; }
-        public List<Discount> Discounts { get; set; }
+        public List<RzdDiscount> Discounts { get; set; }
         public string FreePlaces { get; set; }
-        public List<FreePlacesByCompartment> FreePlacesByCompartments { get; set; }
+        public List<RzdFreePlacesByCompartment> FreePlacesByCompartments { get; set; }
         public bool HasDynamicPricing { get; set; }
         public bool HasFssBenefit { get; set; }
         public bool HasGenderCabins { get; set; }
@@ -29,9 +29,9 @@
         public bool IsMealOptionPossible { get; set; }
         public bool IsOnRequestMealOptionPossible { get; set; }
         public bool IsTwoStorey { get; set; }
-        public DateTime LocalArrivalDateTime { get; set; }
+        public DateTimeOffset LocalArrivalDateTime { get; set; }
         public decimal MaxPrice { get; set; }
-        public DateTime MealSalesOpenedTill { get; set; }
+        public DateTimeOffset MealSalesOpenedTill { get; set; }
         public decimal MinPrice { get; set; }
         public bool OnlyNonRefundableTariff { get; set; }
         public string PassengerSpecifyingRules { get; set; }

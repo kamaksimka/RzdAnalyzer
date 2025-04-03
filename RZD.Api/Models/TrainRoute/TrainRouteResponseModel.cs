@@ -8,6 +8,6 @@ namespace RZD.API.Models.TrainRoute
 {
     public class TrainRouteResponseModel
     {
-        public List<Route> Routes { get; set; }
+        public List<RzdRoute> Routes { get; set; }
     }
 }

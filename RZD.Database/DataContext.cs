@@ -4,6 +4,7 @@ using RZD.Database.Models;
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using Npgsql;
 
 
 namespace RZD.Database
@@ -24,6 +25,7 @@ namespace RZD.Database
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<TrackedRoute> TrackedRoutes { get; set; }
 
         public DataContext(IOptions<RzdConfig> config)
         {
@@ -32,15 +34,14 @@ namespace RZD.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_config.ConnectionString).UseSnakeCaseNamingConvention();
+            optionsBuilder.UseNpgsql(_config.ConnectionString)
+                .UseSnakeCaseNamingConvention();
+
+            NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EntityHistory>()
-                .Property(ch => ch.ChangedFields)
-                .HasColumnType("jsonb");
-
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Roles)
                 .WithMany(x => x.Users)
@@ -50,6 +51,31 @@ namespace RZD.Database
                 .HasOne(x => x.Route)
                 .WithMany(x => x.RouteStops)
                 .HasForeignKey(x => x.RouteId);
+
+            modelBuilder.Entity<City>()
+                .HasIndex(x => x.NodeId).IsUnique();
+
+            modelBuilder.Entity<TrainStation>()
+                .HasIndex(x => x.NodeId).IsUnique();
+
+            modelBuilder.Entity<Train>()
+                .HasIndex(x => new
+                {
+                    x.TrainNumber,
+                    x.OriginStationCode,
+                    x.DestinationStationCode,
+                    x.DepartureDateTime
+                }).IsUnique();
+
+            modelBuilder.Entity<Car>()
+                .HasIndex(x => new
+                {
+                    x.TrainId,
+                    x.CarNumber,
+                    x.CarPlaceType,
+                    x.CarType,
+                    x.CarSubType,
+                }).IsUnique();
 
         }
     }

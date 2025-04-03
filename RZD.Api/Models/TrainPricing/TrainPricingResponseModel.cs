@@ -6,6 +6,6 @@
         public string DestinationStationCode { get; set; }
         public string OriginCode { get; set; }
         public string OriginStationCode { get; set; }
-        public List<Train> Trains { get; set; }
+        public List<RzdTrain> Trains { get; set; }
     }
 }

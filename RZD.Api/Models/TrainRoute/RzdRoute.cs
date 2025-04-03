@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace RZD.API.Models.TrainRoute
 {
-    public class Route
+    public class RzdRoute
     {
         public string TrainNumber { get; set; }
         public string Name { get; set; }    
         public string OriginName { get; set; }
         public string DestinationName { get; set; }
-        public List<RouteStop> RouteStops { get; set; }
+        public List<RzdRouteStop> RouteStops { get; set; }
     }
 }

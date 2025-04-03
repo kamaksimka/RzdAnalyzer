@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RZD.API.Models.TrainRoute
 {
-    public class RouteStop
+    public class RzdRouteStop
     {
         public string ActualMovement { get; set; }
         public DateTime ArrivalDateTime { get; set; }

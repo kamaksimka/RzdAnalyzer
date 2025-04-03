@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RZD.Database;
@@ -12,9 +13,11 @@ using RZD.Database;
 namespace RZD.Database.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250401174224_init8")]
+    partial class init8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("arrival_date_time");
 
                     b.Property<string>("AvailabilityIndication")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("availability_indication");
 
@@ -55,10 +59,12 @@ namespace RZD.Database.Migrations
                         .HasColumnName("car_place_type");
 
                     b.Property<string>("CarSubType")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("car_sub_type");
 
                     b.Property<string>("CarType")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("car_type");
 
@@ -72,6 +78,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("destination_station_code");
 
                     b.Property<string>("FreePlaces")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("free_places");
 
@@ -160,6 +167,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("only_non_refundable_tariff");
 
                     b.Property<string>("PassengerSpecifyingRules")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("passenger_specifying_rules");
 
@@ -168,6 +176,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("place_quantity");
 
                     b.Property<string>("PlaceReservationType")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("place_reservation_type");
 
@@ -176,6 +185,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("places_with_conditional_refundable_tariff_quantity");
 
                     b.Property<string>("ServiceClass")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("service_class");
 
@@ -193,15 +203,16 @@ namespace RZD.Database.Migrations
                         .HasColumnName("train_id");
 
                     b.Property<string>("TripDirection")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("trip_direction");
 
                     b.HasKey("Id")
                         .HasName("pk_cars");
 
-                    b.HasIndex("TrainId", "CarNumber", "CarPlaceType", "CarType", "CarSubType")
+                    b.HasIndex("TrainId", "CarNumber")
                         .IsUnique()
-                        .HasDatabaseName("ix_cars_train_id_car_number_car_place_type_car_type_car_sub_ty");
+                        .HasDatabaseName("ix_cars_train_id_car_number");
 
                     b.ToTable("cars", (string)null);
                 });
@@ -282,9 +293,9 @@ namespace RZD.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("field_name");
 
-                    b.Property<string>("OldFieldValue")
+                    b.Property<object>("OldFieldValue")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("old_field_value");
 
                     b.HasKey("Id")
@@ -586,6 +597,7 @@ namespace RZD.Database.Migrations
                         .HasColumnName("destination_station_code");
 
                     b.Property<string>("DisplayTrainNumber")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("display_train_number");
 
@@ -661,10 +673,12 @@ namespace RZD.Database.Migrations
                         .HasColumnName("origin_station_code");
 
                     b.Property<string>("TrainBrandCode")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("train_brand_code");
 
                     b.Property<string>("TrainDescription")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("train_description");
 

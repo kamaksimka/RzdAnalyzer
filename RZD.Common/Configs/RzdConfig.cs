@@ -4,10 +4,15 @@
     {
         public const string Section = "Rzd";
 
-        public string BaseAddress { get; set; }
-        public string ConnectionString { get; set; }
+        public string BaseAddress { get; set; } = null!;
+        public string ConnectionString { get; set; } = null!;
 
-        public string TrainsJobSchedule { get; set; }
+        public bool ExecuteCitiesJob { get; set; }
+        public string TrainsJobSchedule { get; set; } = null!;
+
+        public int TimeBetweenRequests { get; set; }
+
+        public int NumberOfDay { get; set; }
 
     }
 }

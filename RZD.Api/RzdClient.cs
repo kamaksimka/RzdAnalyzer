@@ -3,17 +3,29 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using RZD.Common.Configs;
+using System.Web;
+using System.Diagnostics;
 
 namespace RZD.API
 {
-    public class RzdClient
+    public class RzdClient:IDisposable
     {
         private readonly HttpClient _client;
-
-        public RzdClient(HttpClient client, RzdConfig config)
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
-            _client = client;
-            _client.BaseAddress = new Uri(config.BaseAddress);
+            PropertyNameCaseInsensitive = true
+        };
+
+        private static Stopwatch stopwatch = Stopwatch.StartNew();
+        private static readonly SemaphoreSlim semaphore = new(1, 1);
+        private readonly RzdConfig rzdConfig;
+
+        public RzdClient(RzdConfig rzdConfig)
+        {
+            _client = new HttpClient();
+            _client.BaseAddress = new Uri(rzdConfig.BaseAddress);
+            _client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 YaBrowser/25.2.0.0 Safari/537.36");
+            this.rzdConfig = rzdConfig;
         }
 
         public virtual async Task<T> SendPostRequestAsync<T>(string route, object? data = null) where T : class
@@ -29,7 +41,7 @@ namespace RZD.API
 
         public virtual async Task<T> SendGetRequestAsync<T>(string route, Dictionary<string, string>? queryParams = null) where T : class
         {
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, GetUriWithQueryParams(route, queryParams));
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, GetRouteWithQueryParams(route, queryParams));
 
             return await SendRequestAsync<T>(requestMessage);
 
@@ -45,6 +57,8 @@ namespace RZD.API
 
         private async Task<T> SendRequestAsync<T>(HttpRequestMessage requestMessage) where T : class
         {
+            await WaitIfNeededAsync();
+
             using var response = _client.SendAsync(requestMessage).Result;
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -54,32 +68,48 @@ namespace RZD.API
 
             response.EnsureSuccessStatusCode();
 
-            var jsonString = await response.Content.ReadAsStringAsync();
-
-            var json = JsonSerializer.Deserialize<T>(jsonString,new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            if (json == null)
-            {
-                throw new Exception($"Ошибка десериализации модели {jsonString} по пути {requestMessage.RequestUri!.ToString()} в тип {typeof(T).FullName}");
-            }
+            var json = await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
 
             return json;
         }
 
-        private Uri GetUriWithQueryParams(string route, Dictionary<string, string>? queryParams)
+        private static string GetRouteWithQueryParams(string route, Dictionary<string, string>? queryParams)
         {
             if (queryParams == null)
-                return new Uri(route);
-
-            var uriBuilder = new UriBuilder(route)
             {
-                Query = string.Join("&", queryParams.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"))
-            };
+                return route;
+            }
 
-            return uriBuilder.Uri;
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            foreach (var param in queryParams)
+            {
+                query[param.Key] = param.Value?.ToString();
+            }
+
+            return $"{route}?{query}";
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
+        }
+
+        private async Task WaitIfNeededAsync()
+        {
+            await semaphore.WaitAsync();
+            try
+            {
+                long elapsedMs = stopwatch.ElapsedMilliseconds;
+                if (elapsedMs < rzdConfig.TimeBetweenRequests)
+                {
+                    await Task.Delay(rzdConfig.TimeBetweenRequests - (int)elapsedMs);
+                }
+                stopwatch.Restart();
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
     }
 }

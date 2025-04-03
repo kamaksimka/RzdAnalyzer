@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace RZD.API.Models.CarPricing
 {
-    public class FreePlacesByCompartment
+    public class RzdDiscount
     {
-        public string CompartmentNumber { get; set; }
-        public string Places { get; set; }
+        public string DiscountType { get; set; }
     }
 }

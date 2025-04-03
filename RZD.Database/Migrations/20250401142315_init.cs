@@ -19,11 +19,13 @@ namespace RZD.Database.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    express_code = table.Column<string>(type: "text", nullable: false),
+                    node_id = table.Column<string>(type: "text", nullable: false),
+                    express_code = table.Column<string>(type: "text", nullable: true),
                     name = table.Column<string>(type: "text", nullable: false),
                     region = table.Column<string>(type: "text", nullable: false),
-                    foreign_code = table.Column<string>(type: "text", nullable: false),
-                    express_codes = table.Column<string>(type: "text", nullable: false)
+                    foreign_code = table.Column<string>(type: "text", nullable: true),
+                    express_codes = table.Column<string>(type: "text", nullable: true),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,6 +60,22 @@ namespace RZD.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tracked_routes",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    origin_express_code = table.Column<string>(type: "text", nullable: false),
+                    destination_express_code = table.Column<string>(type: "text", nullable: false),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tracked_routes", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
@@ -79,11 +97,13 @@ namespace RZD.Database.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    express_code = table.Column<string>(type: "text", nullable: false),
+                    node_id = table.Column<string>(type: "text", nullable: false),
+                    express_code = table.Column<string>(type: "text", nullable: true),
                     name = table.Column<string>(type: "text", nullable: false),
                     region = table.Column<string>(type: "text", nullable: false),
-                    foreign_code = table.Column<string>(type: "text", nullable: false),
-                    city_id = table.Column<long>(type: "bigint", nullable: true)
+                    foreign_code = table.Column<string>(type: "text", nullable: true),
+                    city_id = table.Column<long>(type: "bigint", nullable: true),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,7 +123,7 @@ namespace RZD.Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     entity_id = table.Column<long>(type: "bigint", nullable: false),
                     entity_type_id = table.Column<long>(type: "bigint", nullable: false),
-                    changed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    changed_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     changed_fields = table.Column<Dictionary<string, object>>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
@@ -142,13 +162,12 @@ namespace RZD.Database.Migrations
                 name: "user_roles",
                 columns: table => new
                 {
-                    role_id = table.Column<long>(type: "bigint", nullable: false),
-                    users_id = table.Column<long>(type: "bigint", nullable: false),
-                    usert_id = table.Column<long>(type: "bigint", nullable: false)
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    role_id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_roles", x => new { x.role_id, x.users_id });
+                    table.PrimaryKey("pk_user_roles", x => new { x.role_id, x.user_id });
                     table.ForeignKey(
                         name: "fk_user_roles_roles_role_id",
                         column: x => x.role_id,
@@ -156,8 +175,8 @@ namespace RZD.Database.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_roles_users_users_id",
-                        column: x => x.users_id,
+                        name: "fk_user_roles_users_user_id",
+                        column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -169,10 +188,10 @@ namespace RZD.Database.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    arrival_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    arrival_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     arrival_stop_time = table.Column<int>(type: "integer", nullable: false),
                     car_services = table.Column<List<string>>(type: "text[]", nullable: false),
-                    departure_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    departure_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     departure_stop_time = table.Column<int>(type: "integer", nullable: false),
                     display_train_number = table.Column<string>(type: "text", nullable: false),
                     has_car_transportation_coaches = table.Column<bool>(type: "boolean", nullable: false),
@@ -188,8 +207,8 @@ namespace RZD.Database.Migrations
                     is_tour_package_possible = table.Column<bool>(type: "boolean", nullable: false),
                     is_train_route_allowed = table.Column<bool>(type: "boolean", nullable: false),
                     is_wait_list_available = table.Column<bool>(type: "boolean", nullable: false),
-                    local_arrival_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    local_departure_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    local_arrival_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    local_departure_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     train_brand_code = table.Column<string>(type: "text", nullable: false),
                     train_description = table.Column<string>(type: "text", nullable: false),
                     train_number = table.Column<string>(type: "text", nullable: false),
@@ -198,7 +217,8 @@ namespace RZD.Database.Migrations
                     trip_duration = table.Column<int>(type: "integer", nullable: false),
                     origin_station_id = table.Column<long>(type: "bigint", nullable: false),
                     destination_station_id = table.Column<long>(type: "bigint", nullable: false),
-                    final_train_station_id = table.Column<long>(type: "bigint", nullable: false)
+                    final_train_station_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,7 +250,7 @@ namespace RZD.Database.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     are_places_for_business_travel_booking = table.Column<bool>(type: "boolean", nullable: false),
-                    arrival_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    arrival_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     availability_indication = table.Column<string>(type: "text", nullable: false),
                     car_number = table.Column<string>(type: "text", nullable: false),
                     car_place_type = table.Column<string>(type: "text", nullable: false),
@@ -254,9 +274,9 @@ namespace RZD.Database.Migrations
                     is_meal_option_possible = table.Column<bool>(type: "boolean", nullable: false),
                     is_on_request_meal_option_possible = table.Column<bool>(type: "boolean", nullable: false),
                     is_two_storey = table.Column<bool>(type: "boolean", nullable: false),
-                    local_arrival_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    local_arrival_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     max_price = table.Column<decimal>(type: "numeric", nullable: false),
-                    meal_sales_opened_till = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    meal_sales_opened_till = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     min_price = table.Column<decimal>(type: "numeric", nullable: false),
                     only_non_refundable_tariff = table.Column<bool>(type: "boolean", nullable: false),
                     passenger_specifying_rules = table.Column<string>(type: "text", nullable: false),
@@ -267,7 +287,8 @@ namespace RZD.Database.Migrations
                     service_cost = table.Column<decimal>(type: "numeric", nullable: false),
                     services = table.Column<List<string>>(type: "text[]", nullable: false),
                     trip_direction = table.Column<string>(type: "text", nullable: false),
-                    train_id = table.Column<long>(type: "bigint", nullable: false)
+                    train_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -284,16 +305,17 @@ namespace RZD.Database.Migrations
                 name: "routes",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    departure_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    departure_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     train_number = table.Column<string>(type: "text", nullable: false),
                     origin = table.Column<string>(type: "text", nullable: false),
                     destination = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     origin_name = table.Column<string>(type: "text", nullable: false),
                     destination_name = table.Column<string>(type: "text", nullable: false),
-                    train_id = table.Column<long>(type: "bigint", nullable: false)
+                    train_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -313,26 +335,26 @@ namespace RZD.Database.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     actual_movement = table.Column<string>(type: "text", nullable: false),
-                    arrival_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    arrival_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     arrival_time = table.Column<string>(type: "text", nullable: false),
-                    departure_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    departure_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     departure_time = table.Column<string>(type: "text", nullable: false),
-                    local_arrival_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    local_arrival_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     local_arrival_time = table.Column<string>(type: "text", nullable: false),
-                    local_departure_date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    local_departure_date_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     local_departure_time = table.Column<string>(type: "text", nullable: false),
                     station_code = table.Column<string>(type: "text", nullable: false),
                     stop_duration = table.Column<int>(type: "integer", nullable: false),
                     time_zone_difference = table.Column<int>(type: "integer", nullable: false),
                     route_id = table.Column<long>(type: "bigint", nullable: false),
-                    route_id1 = table.Column<int>(type: "integer", nullable: false)
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_route_stops", x => x.id);
                     table.ForeignKey(
-                        name: "fk_route_stops_routes_route_id1",
-                        column: x => x.route_id1,
+                        name: "fk_route_stops_routes_route_id",
+                        column: x => x.route_id,
                         principalTable: "routes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -342,6 +364,12 @@ namespace RZD.Database.Migrations
                 name: "ix_cars_train_id",
                 table: "cars",
                 column: "train_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_cities_node_id",
+                table: "cities",
+                column: "node_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_entity_histories_entity_type_id",
@@ -354,9 +382,9 @@ namespace RZD.Database.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_route_stops_route_id1",
+                name: "ix_route_stops_route_id",
                 table: "route_stops",
-                column: "route_id1");
+                column: "route_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_routes_train_id",
@@ -368,6 +396,12 @@ namespace RZD.Database.Migrations
                 name: "ix_train_stations_city_id",
                 table: "train_stations",
                 column: "city_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_train_stations_node_id",
+                table: "train_stations",
+                column: "node_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_trains_destination_station_id",
@@ -385,9 +419,9 @@ namespace RZD.Database.Migrations
                 column: "origin_station_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_roles_users_id",
+                name: "ix_user_roles_user_id",
                 table: "user_roles",
-                column: "users_id");
+                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -404,6 +438,9 @@ namespace RZD.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "route_stops");
+
+            migrationBuilder.DropTable(
+                name: "tracked_routes");
 
             migrationBuilder.DropTable(
                 name: "user_roles");

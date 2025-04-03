@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RZD.Database;
@@ -12,9 +13,11 @@ using RZD.Database;
 namespace RZD.Database.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250401184942_init12")]
+    partial class init12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,9 +202,9 @@ namespace RZD.Database.Migrations
                     b.HasKey("Id")
                         .HasName("pk_cars");
 
-                    b.HasIndex("TrainId", "CarNumber", "CarPlaceType", "CarType", "CarSubType")
+                    b.HasIndex("TrainId", "CarNumber", "CarPlaceType")
                         .IsUnique()
-                        .HasDatabaseName("ix_cars_train_id_car_number_car_place_type_car_type_car_sub_ty");
+                        .HasDatabaseName("ix_cars_train_id_car_number_car_place_type");
 
                     b.ToTable("cars", (string)null);
                 });
