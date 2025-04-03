@@ -191,6 +191,39 @@ namespace RZD.Application.Services
 
                 var carsResponse = await _api.CarPricingAsync(origin, destination, departureDate, trainNumber);
 
+                var dbCars = await _ctx.Cars
+                    .Where(x => x.TrainId == dbTrainId).ToListAsync();
+
+                foreach (var dbCar in dbCars)
+                {
+                    if (!carsResponse.Cars.Any(x => x.CarNumber == dbCar.CarNumber
+                                                   && x.CarPlaceType == dbCar.CarPlaceType
+                                                   && x.CarType == dbCar.CarType
+                                                   && x.CarSubType == dbCar.CarSubType))
+                    {
+                        await _ctx.EntityHistories.AddAsync(new EntityHistory()
+                        {
+                            EntityTypeId = (int)EntityTypes.Car,
+                            EntityId = dbCar.Id,
+                            ChangedAt = DateTimeOffset.UtcNow,
+                            FieldName = nameof(dbCar.PlaceQuantity),
+                            OldFieldValue = JsonSerializer.Serialize(dbCar.PlaceQuantity)
+                        });
+
+                        await _ctx.EntityHistories.AddAsync(new EntityHistory()
+                        {
+                            EntityTypeId = (int)EntityTypes.Car,
+                            EntityId = dbCar.Id,
+                            ChangedAt = DateTimeOffset.UtcNow,
+                            FieldName = nameof(dbCar.FreePlaces),
+                            OldFieldValue = dbCar.FreePlaces
+                        });
+
+                        dbCar.PlaceQuantity = 0;
+                        dbCar.FreePlaces = string.Empty;
+                    }
+                }
+
                 foreach (var car in carsResponse.Cars)
                 {
                     var dbCar = await _ctx.Cars
@@ -233,11 +266,11 @@ namespace RZD.Application.Services
 
                                 await _ctx.EntityHistories.AddAsync(entityHistory);
                             }
-
-                            await _ctx.SaveChangesAsync();
                         }
                     }
                 }
+
+                await _ctx.SaveChangesAsync();
             }
             catch(Exception ex)
             {

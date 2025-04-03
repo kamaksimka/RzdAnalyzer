@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Scheduler", "RZD.Schedu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8B2112D-3831-40B6-ADCA-83B514BF33DD}"
 	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		.env.example = .env.example
 		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
