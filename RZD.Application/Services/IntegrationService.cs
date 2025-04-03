@@ -109,7 +109,7 @@ namespace RZD.Application.Services
         public async Task RefreshTrainsAsync()
         {
             logger.LogInformation($"Started RefreshTrainsAsync");
-            var dtStart = DateTime.Now;
+            var dtStart = DateTimeOffset.Now;
 
             var trackedRoutes = _ctx.TrackedRoutes.ToList();
 
@@ -173,12 +173,30 @@ namespace RZD.Application.Services
                     }
                     catch(Exception ex)
                     {
+                        await _ctx.Statistics.AddAsync(new Statistic
+                        {
+                            Name = "RefreshTrainsAsync",
+                            Comment = $"Error in RefreshTrainsAsync: ex: {JsonSerializer.Serialize(ex)}",
+                            IsSuccess = true,
+                            DateStart = DateTimeOffset.UtcNow,
+                        });
+                        await _ctx.SaveChangesAsync();
                         logger.LogError(ex, "Error in RefreshTrainsAsync");
                     }
                 }
             }
-            var dtFinish = DateTime.Now;
+            var dtFinish = DateTimeOffset.Now;
             var timeTaken = dtFinish - dtStart;
+            await _ctx.Statistics.AddAsync(new Statistic
+            {
+                Name = "RefreshTrainsAsync",
+                Comment = $"Finished RefreshTrainsAsync. Time taken: {timeTaken}",
+                IsSuccess = false,
+                DateStart = dtStart.UtcDateTime,
+                DateFinish = dtFinish.UtcDateTime,
+            });
+            await _ctx.SaveChangesAsync();
+
             logger.LogInformation($"Finished RefreshTrainsAsync. Time taken: {timeTaken}");
         }
 
@@ -274,6 +292,14 @@ namespace RZD.Application.Services
             }
             catch(Exception ex)
             {
+                await _ctx.Statistics.AddAsync(new Statistic
+                {
+                    Name = "RefreshCarsAsync",
+                    Comment = $"Error in RefreshCarsAsync: ex: {JsonSerializer.Serialize(ex)}",
+                    IsSuccess = false,
+                    DateStart = DateTimeOffset.UtcNow,
+                });
+                await _ctx.SaveChangesAsync();
                 logger.LogError(ex, "Error in RefreshCarsAsync");
             }
         }

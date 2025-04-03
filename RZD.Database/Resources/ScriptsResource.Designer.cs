@@ -61,8 +61,8 @@ namespace RZD.Database.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO public.&quot;EntityTypes&quot; (Id, Name) VALUES (1, &apos;Train&apos;);
-        ///INSERT INTO public.&quot;EntityTypes&quot; (Id, Name) VALUES (2, &apos;Car&apos;);.
+        ///   Looks up a localized string similar to INSERT INTO public.&quot;entity_types&quot; (Id, Name) VALUES (1, &apos;Train&apos;);
+        ///INSERT INTO public.&quot;entity_types&quot; (Id, Name) VALUES (2, &apos;Car&apos;);.
         /// </summary>
         internal static string EntityTypes {
             get {

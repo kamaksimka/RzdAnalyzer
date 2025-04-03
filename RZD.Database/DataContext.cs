@@ -26,6 +26,7 @@ namespace RZD.Database
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<TrackedRoute> TrackedRoutes { get; set; }
+        public DbSet<Statistic> Statistics { get; set; }
 
         public DataContext(IOptions<RzdConfig> config)
         {
