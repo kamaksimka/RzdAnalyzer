@@ -13,7 +13,7 @@ namespace RZD.Database
     {
         private readonly RzdConfig _config;
 
-        public DbSet<Car> Cars { get; set; }
+        public DbSet<CarPlace> CarPlaces { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Route> Routes { get; set; }
         public DbSet<RouteStop> RouteStops { get; set; }
@@ -68,14 +68,12 @@ namespace RZD.Database
                     x.DepartureDateTime
                 }).IsUnique();
 
-            modelBuilder.Entity<Car>()
+            modelBuilder.Entity<CarPlace>()
                 .HasIndex(x => new
                 {
                     x.TrainId,
                     x.CarNumber,
-                    x.CarPlaceType,
-                    x.CarType,
-                    x.CarSubType,
+                    x.CarPlaceNumber
                 }).IsUnique();
 
         }

@@ -168,10 +168,10 @@ namespace RZD.Application.Services
                                 }
                             }
 
-                            await RefreshCarsAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime.DateTime, train.TrainNumber, dbTrain.Id);
+                            await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime.DateTime, train.TrainNumber, dbTrain.Id);
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         await LogErrorToDbAsync("RefreshTrainsAsync", ex);
                         logger.LogError(ex, "Error in RefreshTrainsAsync");
@@ -193,196 +193,210 @@ namespace RZD.Application.Services
             logger.LogInformation($"Finished RefreshTrainsAsync. Time taken: {timeTaken}");
         }
 
-        public async Task RefreshCarsAsync(string origin, string destination, DateTime departureDate, string trainNumber, long dbTrainId)
+        public async Task RefreshCarPlacesAsync(string origin, string destination, DateTime departureDate, string trainNumber, long trainId)
         {
-            logger.LogInformation($"RefreshCarsAsync for origin:{origin}, destination:{destination}, departureDate:{departureDate}, trainNumber:{trainNumber}");
+            logger.LogInformation($"RefreshCarPlacesAsync for origin:{origin}, destination:{destination}, departureDate:{departureDate}, trainNumber:{trainNumber}");
             try
             {
 
-
+                #region Сохраняем изменение флага IsBooked
                 var carsResponse = await _api.CarPricingAsync(origin, destination, departureDate, trainNumber);
 
-                var dbCars = await _ctx.Cars
-                    .Where(x => x.TrainId == dbTrainId).ToListAsync();
+                var dbCarPlaces = await _ctx.CarPlaces
+                    .Where(x => x.TrainId == trainId).ToListAsync();
 
-                foreach (var dbCar in dbCars)
+                foreach (var dbCarPlace in dbCarPlaces)
                 {
-                    if (!carsResponse.Cars.Any(x => x.CarNumber == dbCar.CarNumber
-                                                   && x.CarPlaceType == dbCar.CarPlaceType
-                                                   && x.CarType == dbCar.CarType
-                                                   && x.CarSubType == dbCar.CarSubType))
+                    var carPlaceNumbers = carsResponse.Cars
+                        .Where(x => dbCarPlace.CarNumber == dbCarPlace.CarNumber)
+                        .SelectMany(x => x.FreePlaces.Split(",").Select(y => y.Trim())).ToList();
+
+                    if (dbCarPlace.IsFree && !carPlaceNumbers.Any(x => x == dbCarPlace.CarPlaceNumber))
                     {
                         await _ctx.EntityHistories.AddAsync(new EntityHistory()
                         {
-                            EntityTypeId = (int)EntityTypes.Car,
-                            EntityId = dbCar.Id,
+                            EntityTypeId = (int)EntityTypes.CarPlace,
+                            EntityId = dbCarPlace.Id,
                             ChangedAt = DateTimeOffset.UtcNow,
-                            FieldName = nameof(dbCar.PlaceQuantity),
-                            OldFieldValue = JsonSerializer.Serialize(dbCar.PlaceQuantity)
+                            FieldName = nameof(dbCarPlace.IsFree),
+                            OldFieldValue = JsonSerializer.Serialize(dbCarPlace.IsFree)
                         });
 
+
+                        dbCarPlace.IsFree = false;
+                    }
+                    else if(!dbCarPlace.IsFree && carPlaceNumbers.Any(x => x == dbCarPlace.CarPlaceNumber))
+                    {
                         await _ctx.EntityHistories.AddAsync(new EntityHistory()
                         {
-                            EntityTypeId = (int)EntityTypes.Car,
-                            EntityId = dbCar.Id,
+                            EntityTypeId = (int)EntityTypes.CarPlace,
+                            EntityId = dbCarPlace.Id,
                             ChangedAt = DateTimeOffset.UtcNow,
-                            FieldName = nameof(dbCar.FreePlaces),
-                            OldFieldValue = dbCar.FreePlaces
+                            FieldName = nameof(dbCarPlace.IsFree),
+                            OldFieldValue = JsonSerializer.Serialize(dbCarPlace.IsFree)
                         });
 
-                        dbCar.PlaceQuantity = 0;
-                        dbCar.FreePlaces = string.Empty;
-                    }
-                }
 
-                foreach (var car in carsResponse.Cars)
-                {
-                    var dbCar = await _ctx.Cars
-                                .Where(x => x.TrainId == dbTrainId
-                                    && x.CarNumber == car.CarNumber
-                                    && x.CarPlaceType == car.CarPlaceType
-                                    && x.CarType == car.CarType
-                                    && x.CarSubType == car.CarSubType)
-                                .FirstOrDefaultAsync();
-
-                    if (dbCar == null)
-                    {
-                        dbCar = new Car()
-                        {
-                            TrainId = dbTrainId,
-                            CreatedDate = DateTimeOffset.UtcNow
-                        };
-
-                        await UpdateDbCarAsync(dbCar, car);
-                        await _ctx.Cars.AddAsync(dbCar);
-                        await _ctx.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        var changes = GetChangesFromCar(dbCar, car);
-                        if (changes.Any())
-                        {
-                            await UpdateDbCarAsync(dbCar, car);
-
-                            foreach (var change in changes)
-                            {
-                                var entityHistory = new EntityHistory
-                                {
-                                    ChangedAt = DateTimeOffset.Now.ToUniversalTime(),
-                                    FieldName = change.Key,
-                                    OldFieldValue = change.Value,
-                                    EntityId = dbCar.Id,
-                                    EntityTypeId = (int)EntityTypes.Car,
-                                };
-
-                                await _ctx.EntityHistories.AddAsync(entityHistory);
-                            }
-                        }
+                        dbCarPlace.IsFree = true;
                     }
                 }
 
                 await _ctx.SaveChangesAsync();
+
+                #endregion
+
+                foreach (var car in carsResponse.Cars)
+                {
+                    var placeNumbers = car.FreePlaces.Split(",").Select(x => x.Trim()).ToList();
+
+                    foreach (var placeNumber in placeNumbers)
+                    {
+                        if (string.IsNullOrWhiteSpace(placeNumber))
+                        {
+                            continue;
+                        }
+
+                        var dbCarPlace = await _ctx.CarPlaces
+                                .Where(x => x.TrainId == trainId
+                                    && x.CarNumber == car.CarNumber
+                                    && x.CarPlaceNumber == placeNumber)
+                                .FirstOrDefaultAsync();
+
+                        if (dbCarPlace == null)
+                        {
+                            var carPlace = new CarPlace()
+                            {
+                                CarPlaceNumber = placeNumber,
+                                IsFree = true,
+                                TrainId = trainId,
+                                CreatedDate = DateTimeOffset.UtcNow,
+                            };
+                            UpdateDbCarPlace(carPlace, car);
+
+                            await _ctx.CarPlaces.AddAsync(carPlace);
+                            await _ctx.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            var changes = GetChangesFromCar(dbCarPlace, car);
+                            if (changes.Any())
+                            {
+                                UpdateDbCarPlace(dbCarPlace, car);
+
+                                foreach (var change in changes)
+                                {
+                                    var entityHistory = new EntityHistory
+                                    {
+                                        ChangedAt = DateTimeOffset.Now.ToUniversalTime(),
+                                        FieldName = change.Key,
+                                        OldFieldValue = change.Value,
+                                        EntityId = dbCarPlace.Id,
+                                        EntityTypeId = (int)EntityTypes.CarPlace,
+                                    };
+
+                                    await _ctx.EntityHistories.AddAsync(entityHistory);
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                await _ctx.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                await LogErrorToDbAsync("RefreshCarsAsync", ex);
-                logger.LogError(ex, "Error in RefreshCarsAsync");
+                await LogErrorToDbAsync("RefreshCarPlacesAsync", ex);
+                logger.LogError(ex, "Error in RefreshCarPlacesAsync");
             }
         }
 
-        private async Task UpdateDbCarAsync(Car newDbCar, RzdCar car)
+        private void UpdateDbCarPlace(CarPlace carPlace, RzdCar car)
         {
-            newDbCar.ArePlacesForBusinessTravelBooking = car.ArePlacesForBusinessTravelBooking;
-            newDbCar.ArrivalDateTime = car.ArrivalDateTime.ToUniversalTime();
-            newDbCar.AvailabilityIndication = car.AvailabilityIndication;
-            newDbCar.CarNumber = car.CarNumber;
-            newDbCar.CarPlaceType = car.CarPlaceType;
-            newDbCar.CarSubType = car.CarSubType;
-            newDbCar.CarType = car.CarType;
-            newDbCar.DestinationStationCode = car.DestinationStationCode;
-            newDbCar.FreePlaces = car.FreePlaces;
-            newDbCar.HasDynamicPricing = car.HasDynamicPricing;
-            newDbCar.HasFssBenefit = car.HasFssBenefit;
-            newDbCar.HasGenderCabins = car.HasGenderCabins;
-            newDbCar.HasNonRefundableTariff = car.HasNonRefundableTariff;
-            newDbCar.HasPlacesNearBabies = car.HasPlacesNearBabies;
-            newDbCar.HasPlacesNearPets = car.HasPlacesNearPets;
-            newDbCar.IsAdditionalMealOptionPossible = car.IsAdditionalMealOptionPossible;
-            newDbCar.IsAdditionalPassengerAllowed = car.IsAdditionalPassengerAllowed;
-            newDbCar.IsBranded = car.IsBranded;
-            newDbCar.IsBuffet = car.IsBuffet;
-            newDbCar.IsCarTransportationCoach = car.IsCarTransportationCoach;
-            newDbCar.IsChildTariffTypeAllowed = car.IsChildTariffTypeAllowed;
-            newDbCar.IsForDisabledPersons = car.IsForDisabledPersons;
-            newDbCar.IsMealOptionPossible = car.IsMealOptionPossible;
-            newDbCar.IsOnRequestMealOptionPossible = car.IsOnRequestMealOptionPossible;
-            newDbCar.IsTwoStorey = car.IsTwoStorey;
-            newDbCar.LocalArrivalDateTime = car.LocalArrivalDateTime.ToUniversalTime();
-            newDbCar.MaxPrice = car.MaxPrice;
-            newDbCar.MealSalesOpenedTill = car.MealSalesOpenedTill.ToUniversalTime();
-            newDbCar.MinPrice = car.MinPrice;
-            newDbCar.OnlyNonRefundableTariff = car.OnlyNonRefundableTariff;
-            newDbCar.PassengerSpecifyingRules = car.PassengerSpecifyingRules;
-            newDbCar.PlaceQuantity = car.PlaceQuantity;
-            newDbCar.PlaceReservationType = car.PlaceReservationType;
-            newDbCar.PlacesWithConditionalRefundableTariffQuantity = car.PlacesWithConditionalRefundableTariffQuantity;
-            newDbCar.ServiceClass = car.ServiceClass;
-            newDbCar.ServiceCost = car.ServiceCost;
-            newDbCar.Services = car.Services.ToList();
-            newDbCar.TripDirection = car.TripDirection;
+            carPlace.ArePlacesForBusinessTravelBooking = car.ArePlacesForBusinessTravelBooking;
+            carPlace.ArrivalDateTime = car.ArrivalDateTime.ToUniversalTime();
+            carPlace.AvailabilityIndication = car.AvailabilityIndication;
+            carPlace.CarNumber = car.CarNumber;
+            carPlace.CarPlaceType = car.CarPlaceType;
+            carPlace.CarSubType = car.CarSubType;
+            carPlace.CarType = car.CarType;
+            carPlace.DestinationStationCode = car.DestinationStationCode;
+            carPlace.HasDynamicPricing = car.HasDynamicPricing;
+            carPlace.HasFssBenefit = car.HasFssBenefit;
+            carPlace.HasGenderCabins = car.HasGenderCabins;
+            carPlace.HasNonRefundableTariff = car.HasNonRefundableTariff;
+            carPlace.HasPlacesNearBabies = car.HasPlacesNearBabies;
+            carPlace.HasPlacesNearPets = car.HasPlacesNearPets;
+            carPlace.IsAdditionalMealOptionPossible = car.IsAdditionalMealOptionPossible;
+            carPlace.IsAdditionalPassengerAllowed = car.IsAdditionalPassengerAllowed;
+            carPlace.IsBranded = car.IsBranded;
+            carPlace.IsBuffet = car.IsBuffet;
+            carPlace.IsCarTransportationCoach = car.IsCarTransportationCoach;
+            carPlace.IsChildTariffTypeAllowed = car.IsChildTariffTypeAllowed;
+            carPlace.IsForDisabledPersons = car.IsForDisabledPersons;
+            carPlace.IsMealOptionPossible = car.IsMealOptionPossible;
+            carPlace.IsOnRequestMealOptionPossible = car.IsOnRequestMealOptionPossible;
+            carPlace.IsTwoStorey = car.IsTwoStorey;
+            carPlace.LocalArrivalDateTime = car.LocalArrivalDateTime.ToUniversalTime();
+            carPlace.MaxPrice = car.MaxPrice;
+            carPlace.MealSalesOpenedTill = car.MealSalesOpenedTill.ToUniversalTime();
+            carPlace.MinPrice = car.MinPrice;
+            carPlace.OnlyNonRefundableTariff = car.OnlyNonRefundableTariff;
+            carPlace.PassengerSpecifyingRules = car.PassengerSpecifyingRules;
+            carPlace.PlaceReservationType = car.PlaceReservationType;
+            carPlace.PlacesWithConditionalRefundableTariffQuantity = car.PlacesWithConditionalRefundableTariffQuantity;
+            carPlace.ServiceClass = car.ServiceClass;
+            carPlace.ServiceCost = car.ServiceCost;
+            carPlace.Services = car.Services.ToList();
+            carPlace.TripDirection = car.TripDirection;
         }
 
-        private Dictionary<string, string> GetChangesFromCar(Car dbCar, RzdCar car)
+        private Dictionary<string, string?> GetChangesFromCar(CarPlace dbCarPlace, RzdCar rzdCar)
         {
-            var changes = new Dictionary<string, string>();
+            var changes = new Dictionary<string, string?>();
 
-            if (dbCar.ArePlacesForBusinessTravelBooking != car.ArePlacesForBusinessTravelBooking)
-                changes[nameof(dbCar.ArePlacesForBusinessTravelBooking)] = JsonSerializer.Serialize(dbCar.ArePlacesForBusinessTravelBooking);
+            if (dbCarPlace.ArePlacesForBusinessTravelBooking != rzdCar.ArePlacesForBusinessTravelBooking)
+                changes[nameof(dbCarPlace.ArePlacesForBusinessTravelBooking)] = JsonSerializer.Serialize(dbCarPlace.ArePlacesForBusinessTravelBooking);
 
-            if (dbCar.ArrivalDateTime != car.ArrivalDateTime)
-                changes[nameof(dbCar.ArrivalDateTime)] = JsonSerializer.Serialize(dbCar.ArrivalDateTime.ToUniversalTime());
+            if (dbCarPlace.ArrivalDateTime != rzdCar.ArrivalDateTime)
+                changes[nameof(dbCarPlace.ArrivalDateTime)] = JsonSerializer.Serialize(dbCarPlace.ArrivalDateTime.ToUniversalTime());
 
-            if (dbCar.AvailabilityIndication != car.AvailabilityIndication)
-                changes[nameof(dbCar.AvailabilityIndication)] = dbCar.AvailabilityIndication;
+            if (dbCarPlace.AvailabilityIndication != rzdCar.AvailabilityIndication)
+                changes[nameof(dbCarPlace.AvailabilityIndication)] = dbCarPlace.AvailabilityIndication;
 
-            if (dbCar.CarNumber != car.CarNumber)
-                changes[nameof(dbCar.CarNumber)] = dbCar.CarNumber;
+            if (dbCarPlace.CarNumber != rzdCar.CarNumber)
+                changes[nameof(dbCarPlace.CarNumber)] = dbCarPlace.CarNumber;
 
-            if (dbCar.CarPlaceType != car.CarPlaceType)
-                changes[nameof(dbCar.CarPlaceType)] = dbCar.CarPlaceType;
+            if (dbCarPlace.CarPlaceType != rzdCar.CarPlaceType)
+                changes[nameof(dbCarPlace.CarPlaceType)] = dbCarPlace.CarPlaceType;
 
-            if (dbCar.CarSubType != car.CarSubType)
-                changes[nameof(dbCar.CarSubType)] = dbCar.CarSubType;
+            if (dbCarPlace.CarSubType != rzdCar.CarSubType)
+                changes[nameof(dbCarPlace.CarSubType)] = dbCarPlace.CarSubType;
 
-            if (dbCar.CarType != car.CarType)
-                changes[nameof(dbCar.CarType)] = dbCar.CarType;
+            if (dbCarPlace.CarType != rzdCar.CarType)
+                changes[nameof(dbCarPlace.CarType)] = dbCarPlace.CarType;
 
-            if (dbCar.DestinationStationCode != car.DestinationStationCode)
-                changes[nameof(dbCar.DestinationStationCode)] = dbCar.DestinationStationCode;
+            if (dbCarPlace.DestinationStationCode != rzdCar.DestinationStationCode)
+                changes[nameof(dbCarPlace.DestinationStationCode)] = dbCarPlace.DestinationStationCode;
 
-            if (dbCar.FreePlaces != car.FreePlaces)
-                changes[nameof(dbCar.FreePlaces)] = dbCar.FreePlaces;
+            if (dbCarPlace.MaxPrice != rzdCar.MaxPrice)
+                changes[nameof(dbCarPlace.MaxPrice)] = JsonSerializer.Serialize(dbCarPlace.MaxPrice);
 
-            if (dbCar.MaxPrice != car.MaxPrice)
-                changes[nameof(dbCar.MaxPrice)] = JsonSerializer.Serialize(dbCar.MaxPrice);
+            if (dbCarPlace.MinPrice != rzdCar.MinPrice)
+                changes[nameof(dbCarPlace.MinPrice)] = JsonSerializer.Serialize(dbCarPlace.MinPrice);
 
-            if (dbCar.MinPrice != car.MinPrice)
-                changes[nameof(dbCar.MinPrice)] = JsonSerializer.Serialize(dbCar.MinPrice);
 
-            if (dbCar.PlaceQuantity != car.PlaceQuantity)
-                changes[nameof(dbCar.PlaceQuantity)] = JsonSerializer.Serialize(dbCar.PlaceQuantity);
+            if (dbCarPlace.ServiceClass != rzdCar.ServiceClass)
+                changes[nameof(dbCarPlace.ServiceClass)] = dbCarPlace.ServiceClass;
 
-            if (dbCar.ServiceClass != car.ServiceClass)
-                changes[nameof(dbCar.ServiceClass)] = dbCar.ServiceClass;
+            if (dbCarPlace.ServiceCost != rzdCar.ServiceCost)
+                changes[nameof(dbCarPlace.ServiceCost)] = JsonSerializer.Serialize(dbCarPlace.ServiceCost);
 
-            if (dbCar.ServiceCost != car.ServiceCost)
-                changes[nameof(dbCar.ServiceCost)] = JsonSerializer.Serialize(dbCar.ServiceCost);
+            if (!dbCarPlace.Services.OrderBy(x => x).SequenceEqual(rzdCar.Services.OrderBy(x => x)))
+                changes[nameof(dbCarPlace.Services)] = JsonSerializer.Serialize(dbCarPlace.Services);
 
-            if (!dbCar.Services.OrderBy(x => x).SequenceEqual(car.Services.OrderBy(x => x)))
-                changes[nameof(dbCar.Services)] = JsonSerializer.Serialize(dbCar.Services);
-
-            if (dbCar.TripDirection != car.TripDirection)
-                changes[nameof(dbCar.TripDirection)] = dbCar.TripDirection;
+            if (dbCarPlace.TripDirection != rzdCar.TripDirection)
+                changes[nameof(dbCarPlace.TripDirection)] = dbCarPlace.TripDirection;
 
             return changes;
         }
@@ -511,7 +525,7 @@ namespace RZD.Application.Services
             return changes;
         }
 
-        private async Task LogErrorToDbAsync(string name,Exception ex)
+        private async Task LogErrorToDbAsync(string name, Exception ex)
         {
             await _ctx.Statistics.AddAsync(new Statistic
             {

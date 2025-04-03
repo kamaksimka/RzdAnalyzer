@@ -15,7 +15,7 @@ namespace RZD.Database.Models
 
         public DateTimeOffset ChangedAt { get; set; }
         public string FieldName { get; set; }
-        public string OldFieldValue { get; set; }
+        public string? OldFieldValue { get; set; }
 
         public virtual EntityType EntityType { get; set; }
     }

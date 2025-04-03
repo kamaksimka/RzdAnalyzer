@@ -3,6 +3,6 @@
     public enum EntityTypes
     {
         Train = 1,
-        Car = 2,
+        CarPlace = 2,
     }
 }
