@@ -173,14 +173,7 @@ namespace RZD.Application.Services
                     }
                     catch(Exception ex)
                     {
-                        await _ctx.Statistics.AddAsync(new Statistic
-                        {
-                            Name = "RefreshTrainsAsync",
-                            Comment = $"Error in RefreshTrainsAsync: ex: {JsonSerializer.Serialize(ex)}",
-                            IsSuccess = true,
-                            DateStart = DateTimeOffset.UtcNow,
-                        });
-                        await _ctx.SaveChangesAsync();
+                        await LogErrorToDbAsync("RefreshTrainsAsync", ex);
                         logger.LogError(ex, "Error in RefreshTrainsAsync");
                     }
                 }
@@ -191,7 +184,7 @@ namespace RZD.Application.Services
             {
                 Name = "RefreshTrainsAsync",
                 Comment = $"Finished RefreshTrainsAsync. Time taken: {timeTaken}",
-                IsSuccess = false,
+                IsSuccess = true,
                 DateStart = dtStart.UtcDateTime,
                 DateFinish = dtFinish.UtcDateTime,
             });
@@ -292,14 +285,7 @@ namespace RZD.Application.Services
             }
             catch(Exception ex)
             {
-                await _ctx.Statistics.AddAsync(new Statistic
-                {
-                    Name = "RefreshCarsAsync",
-                    Comment = $"Error in RefreshCarsAsync: ex: {JsonSerializer.Serialize(ex)}",
-                    IsSuccess = false,
-                    DateStart = DateTimeOffset.UtcNow,
-                });
-                await _ctx.SaveChangesAsync();
+                await LogErrorToDbAsync("RefreshCarsAsync", ex);
                 logger.LogError(ex, "Error in RefreshCarsAsync");
             }
         }
@@ -523,6 +509,18 @@ namespace RZD.Application.Services
                 changes["TripDuration"] = JsonSerializer.Serialize(train.TripDuration);
 
             return changes;
+        }
+
+        private async Task LogErrorToDbAsync(string name,Exception ex)
+        {
+            await _ctx.Statistics.AddAsync(new Statistic
+            {
+                Name = name,
+                Comment = $"Error in {name}: ex: {ex.Message}, inex: {ex.InnerException?.Message}, stackTrace: {ex.StackTrace}",
+                IsSuccess = false,
+                DateStart = DateTimeOffset.UtcNow,
+            });
+            await _ctx.SaveChangesAsync();
         }
     }
 }
