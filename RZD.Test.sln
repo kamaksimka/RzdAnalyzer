@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Database", "RZD.Databas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Common", "RZD.Common\RZD.Common.csproj", "{656DFBF2-A212-4BE6-A57B-EB0B313AB657}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Integration", "RZD.Api\RZD.Integration.csproj", "{941761DE-16FC-4FE0-B25F-CF1578F3367F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Application", "RZD.Application\RZD.Application.csproj", "{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Scheduler", "RZD.Scheduler\RZD.Scheduler.csproj", "{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}"
@@ -21,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.env.example = .env.example
 		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Api", "RZD.Api\RZD.Api.csproj", "{1413BF61-F3AF-4D7A-AAFA-6CC384256D09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RZD.Integration", "RZD.Integration\RZD.Integration.csproj", "{A3B62024-0A06-4401-8854-E3D55B00BB3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +42,6 @@ Global
 		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{656DFBF2-A212-4BE6-A57B-EB0B313AB657}.Release|Any CPU.Build.0 = Release|Any CPU
-		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{941761DE-16FC-4FE0-B25F-CF1578F3367F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{381FFEC2-22B5-4D38-B6A5-45B6E6A53A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,6 +50,14 @@ Global
 		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CEA7B38-A9B6-45B0-A86D-91D4FD50908B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1413BF61-F3AF-4D7A-AAFA-6CC384256D09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1413BF61-F3AF-4D7A-AAFA-6CC384256D09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1413BF61-F3AF-4D7A-AAFA-6CC384256D09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1413BF61-F3AF-4D7A-AAFA-6CC384256D09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B62024-0A06-4401-8854-E3D55B00BB3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B62024-0A06-4401-8854-E3D55B00BB3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B62024-0A06-4401-8854-E3D55B00BB3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B62024-0A06-4401-8854-E3D55B00BB3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

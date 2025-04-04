@@ -1,4 +1,4 @@
-﻿namespace RZD.API.Models.TrainPricing
+﻿namespace RZD.Integration.Models.TrainPricing
 {
     public class TrainPricingResponseModel
     {

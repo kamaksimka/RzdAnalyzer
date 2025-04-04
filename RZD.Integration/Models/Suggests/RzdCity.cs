@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RZD.API.Models.Suggests
+namespace RZD.Integration.Models.Suggests
 {
     public class RzdCity
     {

@@ -1,4 +1,4 @@
-﻿namespace RZD.API.Models.Suggests
+﻿namespace RZD.Integration.Models.Suggests
 {
     public class SuggestsResponseModel
     {

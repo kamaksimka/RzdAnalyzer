@@ -1,4 +1,4 @@
-﻿namespace RZD.API.Models.CarPricing
+﻿namespace RZD.Integration.Models.CarPricing
 {
     public class RzdCar
     {

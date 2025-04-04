@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;
-using RZD.API;
 using RZD.Application.Helpers;
 using RZD.Common.Configs;
 using RZD.Common.Enums;
 using RZD.Database;
 using RZD.Database.Models;
-using RZD.API.Models.CarPricing;
-using RZD.API.Models.TrainPricing;
+using RZD.Integration;
+using RZD.Integration.Models.CarPricing;
+using RZD.Integration.Models.TrainPricing;
 using System.Diagnostics;
 using System.Text.Json;
 

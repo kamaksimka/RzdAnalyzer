@@ -6,7 +6,7 @@ using RZD.Common.Configs;
 using System.Web;
 using System.Diagnostics;
 
-namespace RZD.API
+namespace RZD.Integration
 {
     public class RzdClient:IDisposable
     {
@@ -28,9 +28,9 @@ namespace RZD.API
             this.rzdConfig = rzdConfig;
         }
 
-        public virtual async Task<T> SendPostRequestAsync<T>(string route, object? data = null) where T : class
+        public virtual async Task<T> SendPostRequestAsync<T>(string route, object? data = null, Dictionary<string, string>? queryParams = null) where T : class
         {
-            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, route)
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, GetRouteWithQueryParams(route, queryParams))
             {
                 Content = data != null ? JsonContent.Create(data) : null
             };

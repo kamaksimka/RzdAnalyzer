@@ -1,4 +1,4 @@
-﻿namespace RZD.API;
+﻿namespace RZD.Integration;
 
 public struct RzdApiEndpoints
 {

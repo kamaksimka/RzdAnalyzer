@@ -1,6 +1,7 @@
 ﻿
 
-using RZD.API;
+
+using RZD.Integration;
 using System.Text.Json.Nodes;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -12,5 +13,5 @@ var api = new RzdApi(new RZD.Common.Configs.RzdConfig
     TimeBetweenRequests = 2000,
 });
 
-var r = await api.CarPricingAsync("2006004", "2004006", DateTimeOffset.Parse("2025-04-02T23:00:00").DateTime, "038А");
+var r = await api.CarPricingAsync("2006000", "2004000", DateTimeOffset.Parse("2025-04-09T09:40:00").DateTime, "762А");
 var a = 1;

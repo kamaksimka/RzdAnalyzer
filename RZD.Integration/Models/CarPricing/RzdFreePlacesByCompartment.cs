@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RZD.API.Models.CarPricing
+namespace RZD.Integration.Models.CarPricing
 {
     public class RzdFreePlacesByCompartment
     {

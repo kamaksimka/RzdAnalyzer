@@ -1,10 +1,10 @@
-﻿using RZD.API.Models.CarPricing;
-using RZD.API.Models.Suggests;
-using RZD.API.Models.TrainPricing;
-using RZD.API.Models.TrainRoute;
+﻿using RZD.Integration.Models.CarPricing;
+using RZD.Integration.Models.Suggests;
+using RZD.Integration.Models.TrainPricing;
+using RZD.Integration.Models.TrainRoute;
 using RZD.Common.Configs;
 
-namespace RZD.API
+namespace RZD.Integration
 {
     public class RzdApi:IDisposable
     {
@@ -32,13 +32,18 @@ namespace RZD.API
 
         public async Task<CarPricingResponseModel> CarPricingAsync(string origin, string destination, DateTime departureDate, string trainNumber)
         {
+            var query = new Dictionary<string, string>()
+            {
+                ["service_provider"] = "B2B_RZD",
+                ["isBonusPurchase"] = "false"
+            };
             return await _client.SendPostRequestAsync<CarPricingResponseModel>(RzdApiEndpoints.CarPricing,new CarPricingRequestModel()
             {
                 OriginCode = origin,
                 DestinationCode = destination,
                 DepartureDate = departureDate,
                 TrainNumber = trainNumber
-            });
+            }, query);
         }
 
         public void Dispose()

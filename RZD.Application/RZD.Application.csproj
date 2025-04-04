@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RZD.Api\RZD.Integration.csproj" />
     <ProjectReference Include="..\RZD.Database\RZD.Database.csproj" />
+    <ProjectReference Include="..\RZD.Integration\RZD.Integration.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RZD.API.Models.TrainRoute
+namespace RZD.Integration.Models.TrainRoute
 {
     public class TrainRouteResponseModel
     {

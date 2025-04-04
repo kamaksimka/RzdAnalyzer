@@ -1,10 +1,11 @@
-﻿using System;
+﻿using RZD.Integration.Models.TrainPricing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RZD.API.Models.TrainPricing
+namespace RZD.Integration.Models.TrainPricing
 {
     public class RzdTrain
     {
@@ -38,5 +39,7 @@ namespace RZD.API.Models.TrainPricing
         public string TrainNumberToGetRoute { get; set; }
         public int TripDistance { get; set; }
         public decimal TripDuration { get; set; }
+
+        public List<RzdTrainCar> CarGroups { get; set; }
     }
 }
