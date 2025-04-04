@@ -9,7 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["RZD.Scheduler/RZD.Scheduler.csproj", "RZD.Scheduler/"]
 COPY ["RZD.Application/RZD.Application.csproj", "RZD.Application/"]
-COPY ["RZD.Api/RZD.Integration.csproj", "RZD.Api/"]
+COPY ["RZD.Integration/RZD.Integration.csproj", "RZD.Integration/"]
 COPY ["RZD.Common/RZD.Common.csproj", "RZD.Common/"]
 COPY ["RZD.Database/RZD.Database.csproj", "RZD.Database/"]
 RUN dotnet restore "./RZD.Scheduler/./RZD.Scheduler.csproj"
