@@ -10,6 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["RZD.Api/RZD.Api.csproj", "RZD.Api/"]
+COPY ["RZD.Integration/RZD.Integration.csproj", "RZD.Integration/"]
+COPY ["RZD.Common/RZD.Common.csproj", "RZD.Common/"]
 RUN dotnet restore "./RZD.Api/./RZD.Api.csproj"
 COPY . .
 WORKDIR "/src/RZD.Api"
