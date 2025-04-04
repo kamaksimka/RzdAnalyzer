@@ -18,7 +18,7 @@ services:
     image: mcr.microsoft.com/dotnet/aspnet:8.0
     container_name: rzd-api
     ports:
-      - "80:80"
+      - "8080:8080"
     build:
         context: .
         dockerfile: 'RZD.Api/Dockerfile'
