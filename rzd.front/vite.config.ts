@@ -10,6 +10,20 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  server: {
+    proxy: {
+      [`^/api`]: {
+        target: "http://localhost:5144",
+        secure: false
+      },
+    },
+    port: 5173,
+    watch: {
+      usePolling: true
+    },
+    host: true,
+    strictPort: true
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

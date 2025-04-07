@@ -27,6 +27,7 @@ namespace RZD.Database
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<TrackedRoute> TrackedRoutes { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public DataContext(IOptions<RzdConfig> config)
         {
@@ -38,7 +39,7 @@ namespace RZD.Database
             optionsBuilder.UseNpgsql(_config.ConnectionString)
                 .UseSnakeCaseNamingConvention();
 
-            NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
+            //NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

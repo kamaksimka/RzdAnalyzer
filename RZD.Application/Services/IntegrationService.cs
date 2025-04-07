@@ -111,7 +111,7 @@ namespace RZD.Application.Services
             logger.LogInformation($"Started RefreshTrainsAsync");
             var dtStart = DateTimeOffset.Now;
 
-            var trackedRoutes = _ctx.TrackedRoutes.ToList();
+            var trackedRoutes = _ctx.TrackedRoutes.Where(x => !x.IsDeleted).ToList();
 
             foreach (var trackedRoute in trackedRoutes)
             {

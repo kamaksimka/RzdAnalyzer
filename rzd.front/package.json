@@ -12,7 +12,13 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "@fortawesome/fontawesome-svg-core": "^6.5.0",
+    "@fortawesome/free-solid-svg-icons": "^6.5.0",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
+    "axios": "1.8.4",
+    "vue-router": "^4.5.0",
+    "jwt-decode": "3.1.2"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.1",
@@ -28,5 +34,6 @@
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vue-tsc": "^2.2.8"
+    
   }
 }

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RZD.Database\RZD.Database.csproj" />
     <ProjectReference Include="..\RZD.Integration\RZD.Integration.csproj" />
   </ItemGroup>

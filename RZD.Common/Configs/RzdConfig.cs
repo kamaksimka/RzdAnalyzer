@@ -1,8 +1,10 @@
-﻿namespace RZD.Common.Configs
+﻿using RZD.Common.Configs.Base;
+
+namespace RZD.Common.Configs
 {
-    public class RzdConfig
+    public class RzdConfig:IBaseConfig
     {
-        public const string Section = "Rzd";
+        public static string Section => "Rzd";
 
         public string BaseAddress { get; set; } = null!;
         public string ConnectionString { get; set; } = null!;
