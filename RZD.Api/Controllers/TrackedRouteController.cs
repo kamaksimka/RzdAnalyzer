@@ -30,5 +30,14 @@ namespace RZD.Api.Controllers
         [Authorize(Roles = nameof(Roles.Admin))]
         public async Task Delete([FromBody] DeleteTrackedRouteRequest request)
             => await _trackedRouteService.DeleteAsync(request);
+
+        [HttpPost("suggests")]
+        [Authorize(Roles = nameof(Roles.Admin))]
+        public async Task<List<TrainStationModel>> Suggests([FromBody] SuggestsRequest request)
+            => await _trackedRouteService.SuggestsAsync(request);
+
+        [HttpPost("statistic")]
+        public async Task<RouteStatistic> GetRouteStatistic([FromBody]RouteStatisticRequest request)
+            => await _trackedRouteService.GetRouteStatistic(request);
     }
 }

@@ -3,6 +3,8 @@ import HomePage from '@/pages/HomePage.vue';
 import LoginPage from '@/pages/LoginPage.vue';
 import RegisterPage from '@/pages/RegisterPage.vue';
 import TrackedRoutesPage from '@/pages/TrackedRoutesPage.vue';
+import FeedbackPage from '@/pages/FeedbackPage.vue';
+import RouteStatisticPage from '@/pages/RouteStatisticPage.vue'
 
 const routes = [
   {
@@ -25,6 +27,16 @@ const routes = [
     name: 'trackedRoutes',
     component: TrackedRoutesPage, 
   },
+  {
+    path: '/feedback',
+    name: 'feedback',
+    component: FeedbackPage,
+  },
+  {
+    path: '/route-statistic/:id',
+    name: 'route-statistic',
+    component: RouteStatisticPage,
+  }
 ];
 
 const router = createRouter({

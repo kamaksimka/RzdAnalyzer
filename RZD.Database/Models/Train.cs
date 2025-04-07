@@ -42,5 +42,8 @@
         public string DestinationStationCode { get; set; }
 
         public string FinalTrainStationCode { get; set; }
+
+        public long? TrackedRouteId { get; set; } = null;
+        public virtual TrackedRoute? TrackedRoute { get; set; }
     }
 }

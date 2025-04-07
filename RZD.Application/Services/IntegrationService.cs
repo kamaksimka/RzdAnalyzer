@@ -126,6 +126,7 @@ namespace RZD.Application.Services
 
                         foreach (var train in trainResponse.Trains)
                         {
+                            var a = train.CarGroups;
                             var dbTrain = await _ctx.Trains
                                 .Where(x => x.TrainNumber == train.TrainNumber
                                     && x.OriginStationCode == train.OriginStationCode
@@ -167,7 +168,11 @@ namespace RZD.Application.Services
                                 }
                             }
                             await _ctx.SaveChangesAsync();
-                            await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime.DateTime, train.TrainNumber, dbTrain.Id);
+
+                            if (train.CarGroups.Any())
+                            {
+                                await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime.DateTime, train.TrainNumber, dbTrain.Id);
+                            }
                         }
                     }
                     catch (Exception ex)

@@ -7,5 +7,7 @@
         public string DestinationExpressCode { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public bool IsDeleted { get; set; }
+
+        public virtual List<Train> Trains { get; set; }
     }
 }

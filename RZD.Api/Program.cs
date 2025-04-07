@@ -46,6 +46,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContextFactory<DataContext>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TrackedRouteService>();
+builder.Services.AddScoped<FeedbackService>();
 
 
 var jwtConfig = builder.Configuration.GetSection(JwtConfig.Section).Get<JwtConfig>()!;
