@@ -10,29 +10,31 @@ services:
       - db
     env_file:
       - .env
+    restart: unless-stopped  
 
   api:
     container_name: rzd-api
     ports:
       - "8080:8080"
     build:
-        context: .
-        dockerfile: 'RZD.Api/Dockerfile'
+      context: .
+      dockerfile: 'RZD.Api/Dockerfile'
     depends_on:
       - db
     env_file:
-        - .env
+      - .env
+    restart: unless-stopped  
 
   front:
     container_name: rzd-front
     build:
-        context: .
-        dockerfile: 'rzd.front/Dockerfile'
+      context: .
+      dockerfile: 'rzd.front/Dockerfile'
     depends_on:
       - api
     env_file:
-        - .env
-
+      - .env
+    restart: unless-stopped  
 
   db:
     image: postgres:17.4
@@ -43,6 +45,7 @@ services:
       - "6543:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped  
 
   nginx:
     container_name: rzd-nginx
@@ -54,7 +57,7 @@ services:
       - 8000:80
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
-
+    restart: unless-stopped  
 
 volumes:
   pgdata:
