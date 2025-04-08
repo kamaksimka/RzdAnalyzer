@@ -35,7 +35,6 @@
         public bool IsMealOptionPossible { get; set; }
         public bool IsOnRequestMealOptionPossible { get; set; }
         public bool IsTwoStorey { get; set; }
-        public DateTimeOffset LocalArrivalDateTime { get; set; }
         public DateTimeOffset MealSalesOpenedTill { get; set; }
         public bool OnlyNonRefundableTariff { get; set; }
         public string? PassengerSpecifyingRules { get; set; }

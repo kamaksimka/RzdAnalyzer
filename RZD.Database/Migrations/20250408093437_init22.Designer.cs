@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RZD.Database;
@@ -12,9 +13,11 @@ using RZD.Database;
 namespace RZD.Database.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250408093437_init22")]
+    partial class init22
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,6 +146,10 @@ namespace RZD.Database.Migrations
                     b.Property<bool>("IsTwoStorey")
                         .HasColumnType("boolean")
                         .HasColumnName("is_two_storey");
+
+                    b.Property<DateTimeOffset>("LocalArrivalDateTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("local_arrival_date_time");
 
                     b.Property<decimal>("MaxPrice")
                         .HasColumnType("numeric")
@@ -709,6 +716,14 @@ namespace RZD.Database.Migrations
                     b.Property<bool>("IsWaitListAvailable")
                         .HasColumnType("boolean")
                         .HasColumnName("is_wait_list_available");
+
+                    b.Property<DateTimeOffset>("LocalArrivalDateTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("local_arrival_date_time");
+
+                    b.Property<DateTimeOffset>("LocalDepartureDateTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("local_departure_date_time");
 
                     b.Property<string>("OriginStationCode")
                         .IsRequired()

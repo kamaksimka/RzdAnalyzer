@@ -10,7 +10,7 @@ services:
       - db
     env_file:
       - .env
-    restart: unless-stopped  
+    restart: always  
 
   api:
     container_name: rzd-api
@@ -23,7 +23,7 @@ services:
       - db
     env_file:
       - .env
-    restart: unless-stopped  
+    restart: always  
 
   front:
     container_name: rzd-front
@@ -36,7 +36,7 @@ services:
       - .env
     ports:
       - "8000:80"
-    restart: unless-stopped  
+    restart: always  
 
   db:
     image: postgres:17.4
@@ -47,9 +47,20 @@ services:
       - "6543:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    restart: unless-stopped  
+    restart: always  
 
-  
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: rzd-portainer
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    ports:
+      - "9000:8000"
+      - "9443:9443"
+    restart: always
 
 volumes:
   pgdata:

@@ -110,6 +110,7 @@ namespace RZD.Application.Services
         {
             logger.LogInformation($"Started RefreshTrainsAsync");
             var dtStart = DateTimeOffset.Now;
+            var numberOfTrains = 0;
 
             var trackedRoutes = _ctx.TrackedRoutes.Where(x => !x.IsDeleted).ToList();
 
@@ -122,6 +123,9 @@ namespace RZD.Application.Services
                     try
                     {
                         var trainResponse = await _api.TrainPricingAsync(trackedRoute.OriginExpressCode, trackedRoute.DestinationExpressCode, date);
+
+                        numberOfTrains += trainResponse.Trains.Count;
+
                         logger.LogInformation($"Found {trainResponse.Trains.Count} trains for OriginExpressCode:{trackedRoute.OriginExpressCode}, DestinationExpressCode: {trackedRoute.DestinationExpressCode}, date:{date}");
 
                         foreach (var train in trainResponse.Trains)
@@ -172,7 +176,7 @@ namespace RZD.Application.Services
 
                             if (train.CarGroups.Any())
                             {
-                                await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime.DateTime, train.TrainNumber, dbTrain.Id);
+                                await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime, train.TrainNumber, dbTrain.Id);
                             }
                         }
                     }
@@ -185,17 +189,18 @@ namespace RZD.Application.Services
             }
             var dtFinish = DateTimeOffset.Now;
             var timeTaken = dtFinish - dtStart;
+            var logComment = $"Finished RefreshTrainsAsync. Time taken: {timeTaken}, number of trains: {numberOfTrains}";
             await _ctx.Statistics.AddAsync(new Statistic
             {
                 Name = "RefreshTrainsAsync",
-                Comment = $"Finished RefreshTrainsAsync. Time taken: {timeTaken}",
+                Comment = logComment,
                 IsSuccess = true,
                 DateStart = dtStart.UtcDateTime,
                 DateFinish = dtFinish.UtcDateTime,
             });
             await _ctx.SaveChangesAsync();
 
-            logger.LogInformation($"Finished RefreshTrainsAsync. Time taken: {timeTaken}");
+            logger.LogInformation(logComment);
         }
 
         public async Task RefreshCarPlacesAsync(string origin, string destination, DateTime departureDate, string trainNumber, long trainId)
@@ -204,7 +209,7 @@ namespace RZD.Application.Services
             try
             {
 
-                #region Сохраняем изменение флага IsBooked
+                #region Сохраняем изменение флага IsFree
                 var carsResponse = await _api.CarPricingAsync(origin, destination, departureDate, trainNumber);
 
                 var dbCarPlaces = await _ctx.CarPlaces
@@ -318,7 +323,7 @@ namespace RZD.Application.Services
         private void UpdateDbCarPlace(CarPlace carPlace, RzdCar car)
         {
             carPlace.ArePlacesForBusinessTravelBooking = car.ArePlacesForBusinessTravelBooking;
-            carPlace.ArrivalDateTime = car.ArrivalDateTime.ToUniversalTime();
+            carPlace.ArrivalDateTime = new DateTimeOffset(car.ArrivalDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
             carPlace.AvailabilityIndication = car.AvailabilityIndication;
             carPlace.CarNumber = car.CarNumber;
             carPlace.CarPlaceType = car.CarPlaceType;
@@ -341,9 +346,8 @@ namespace RZD.Application.Services
             carPlace.IsMealOptionPossible = car.IsMealOptionPossible;
             carPlace.IsOnRequestMealOptionPossible = car.IsOnRequestMealOptionPossible;
             carPlace.IsTwoStorey = car.IsTwoStorey;
-            carPlace.LocalArrivalDateTime = car.LocalArrivalDateTime.ToUniversalTime();
             carPlace.MaxPrice = car.MaxPrice;
-            carPlace.MealSalesOpenedTill = car.MealSalesOpenedTill.ToUniversalTime();
+            carPlace.MealSalesOpenedTill = new DateTimeOffset(car.MealSalesOpenedTill, TimeSpan.FromHours(3)).ToUniversalTime();
             carPlace.MinPrice = car.MinPrice;
             carPlace.OnlyNonRefundableTariff = car.OnlyNonRefundableTariff;
             carPlace.PassengerSpecifyingRules = car.PassengerSpecifyingRules;
@@ -408,10 +412,10 @@ namespace RZD.Application.Services
         private async Task UpdateDbTrainAsync(Train dbTrain, RzdTrain train)
         {
             dbTrain.CreatedDate = DateTimeOffset.Now.ToUniversalTime();
-            dbTrain.ArrivalDateTime = train.ArrivalDateTime.ToUniversalTime();
+            dbTrain.ArrivalDateTime = new DateTimeOffset(train.ArrivalDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
             dbTrain.ArrivalStopTime = train.ArrivalStopTime;
             dbTrain.CarServices = train.CarServices;
-            dbTrain.DepartureDateTime = train.DepartureDateTime.ToUniversalTime();
+            dbTrain.DepartureDateTime = new DateTimeOffset(train.DepartureDateTime,TimeSpan.FromHours(3)).ToUniversalTime();
             dbTrain.DepartureStopTime = train.DepartureStopTime;
             dbTrain.DisplayTrainNumber = train.DisplayTrainNumber;
             dbTrain.HasCarTransportationCoaches = train.HasCarTransportationCoaches;
@@ -427,8 +431,6 @@ namespace RZD.Application.Services
             dbTrain.IsTourPackagePossible = train.IsTourPackagePossible;
             dbTrain.IsTrainRouteAllowed = train.IsTrainRouteAllowed;
             dbTrain.IsWaitListAvailable = train.IsWaitListAvailable;
-            dbTrain.LocalArrivalDateTime = train.LocalArrivalDateTime.ToUniversalTime();
-            dbTrain.LocalDepartureDateTime = train.LocalDepartureDateTime.ToUniversalTime();
             dbTrain.TrainBrandCode = train.TrainBrandCode;
             dbTrain.TrainDescription = train.TrainDescription;
             dbTrain.TrainNumber = train.TrainNumber;
@@ -501,12 +503,6 @@ namespace RZD.Application.Services
 
             if (newDbTrain.IsWaitListAvailable != train.IsWaitListAvailable)
                 changes["IsWaitListAvailable"] = JsonSerializer.Serialize(train.IsWaitListAvailable);
-
-            if (newDbTrain.LocalArrivalDateTime != train.LocalArrivalDateTime)
-                changes["LocalArrivalDateTime"] = JsonSerializer.Serialize(train.LocalArrivalDateTime.ToUniversalTime());
-
-            if (newDbTrain.LocalDepartureDateTime != train.LocalDepartureDateTime)
-                changes["LocalDepartureDateTime"] = JsonSerializer.Serialize(train.LocalDepartureDateTime.ToUniversalTime());
 
             if (newDbTrain.TrainBrandCode != train.TrainBrandCode)
                 changes["TrainBrandCode"] = train.TrainBrandCode;

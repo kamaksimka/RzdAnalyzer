@@ -25,8 +25,6 @@
         public bool IsTourPackagePossible { get; set; }
         public bool IsTrainRouteAllowed { get; set; }
         public bool IsWaitListAvailable { get; set; }
-        public DateTimeOffset LocalArrivalDateTime { get; set; }
-        public DateTimeOffset LocalDepartureDateTime { get; set; }
         public string? TrainBrandCode { get; set; }
         public string? TrainDescription { get; set; }
         public string TrainNumber { get; set; }
@@ -43,7 +41,7 @@
 
         public string FinalTrainStationCode { get; set; }
 
-        public long? TrackedRouteId { get; set; } = null;
-        public virtual TrackedRoute? TrackedRoute { get; set; }
+        public long TrackedRouteId { get; set; }
+        public virtual TrackedRoute TrackedRoute { get; set; }
     }
 }

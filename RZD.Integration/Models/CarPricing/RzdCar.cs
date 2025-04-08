@@ -3,7 +3,7 @@
     public class RzdCar
     {
         public bool ArePlacesForBusinessTravelBooking { get; set; }
-        public DateTimeOffset ArrivalDateTime { get; set; }
+        public DateTime ArrivalDateTime { get; set; }
         public string AvailabilityIndication { get; set; }
         public string CarNumber { get; set; }
         public string CarPlaceType { get; set; }
@@ -29,9 +29,9 @@
         public bool IsMealOptionPossible { get; set; }
         public bool IsOnRequestMealOptionPossible { get; set; }
         public bool IsTwoStorey { get; set; }
-        public DateTimeOffset LocalArrivalDateTime { get; set; }
+        public DateTime LocalArrivalDateTime { get; set; }
         public decimal MaxPrice { get; set; }
-        public DateTimeOffset MealSalesOpenedTill { get; set; }
+        public DateTime MealSalesOpenedTill { get; set; }
         public decimal MinPrice { get; set; }
         public bool OnlyNonRefundableTariff { get; set; }
         public string PassengerSpecifyingRules { get; set; }
