@@ -130,12 +130,12 @@ namespace RZD.Application.Services
 
                         foreach (var train in trainResponse.Trains)
                         {
-                            var a = train.CarGroups;
+                            var departureDateTimeUtc = new DateTimeOffset(train.DepartureDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
                             var dbTrain = await _ctx.Trains
                                 .Where(x => x.TrainNumber == train.TrainNumber
                                     && x.OriginStationCode == train.OriginStationCode
                                     && x.DestinationStationCode == train.DestinationStationCode
-                                    && x.DepartureDateTime == train.DepartureDateTime.ToUniversalTime())
+                                    && x.DepartureDateTime == departureDateTimeUtc)
                                 .FirstOrDefaultAsync();
 
                             if (dbTrain == null)
@@ -366,7 +366,7 @@ namespace RZD.Application.Services
             if (dbCarPlace.ArePlacesForBusinessTravelBooking != rzdCar.ArePlacesForBusinessTravelBooking)
                 changes[nameof(dbCarPlace.ArePlacesForBusinessTravelBooking)] = JsonSerializer.Serialize(dbCarPlace.ArePlacesForBusinessTravelBooking);
 
-            if (dbCarPlace.ArrivalDateTime != rzdCar.ArrivalDateTime)
+            if (dbCarPlace.ArrivalDateTime != new DateTimeOffset(rzdCar.ArrivalDateTime, TimeSpan.FromHours(3)).ToUniversalTime())
                 changes[nameof(dbCarPlace.ArrivalDateTime)] = JsonSerializer.Serialize(dbCarPlace.ArrivalDateTime.ToUniversalTime());
 
             if (dbCarPlace.AvailabilityIndication != rzdCar.AvailabilityIndication)
@@ -387,12 +387,74 @@ namespace RZD.Application.Services
             if (dbCarPlace.DestinationStationCode != rzdCar.DestinationStationCode)
                 changes[nameof(dbCarPlace.DestinationStationCode)] = dbCarPlace.DestinationStationCode;
 
+            if (dbCarPlace.HasDynamicPricing != rzdCar.HasDynamicPricing)
+                changes[nameof(dbCarPlace.HasDynamicPricing)] = JsonSerializer.Serialize(dbCarPlace.HasDynamicPricing);
+
+            if (dbCarPlace.HasFssBenefit != rzdCar.HasFssBenefit)
+                changes[nameof(dbCarPlace.HasFssBenefit)] = JsonSerializer.Serialize(dbCarPlace.HasFssBenefit);
+
+            if (dbCarPlace.HasGenderCabins != rzdCar.HasGenderCabins)
+                changes[nameof(dbCarPlace.HasGenderCabins)] = JsonSerializer.Serialize(dbCarPlace.HasGenderCabins);
+
+            if (dbCarPlace.HasNonRefundableTariff != rzdCar.HasNonRefundableTariff)
+                changes[nameof(dbCarPlace.HasNonRefundableTariff)] = JsonSerializer.Serialize(dbCarPlace.HasNonRefundableTariff);
+
+            if (dbCarPlace.HasPlacesNearBabies != rzdCar.HasPlacesNearBabies)
+                changes[nameof(dbCarPlace.HasPlacesNearBabies)] = JsonSerializer.Serialize(dbCarPlace.HasPlacesNearBabies);
+
+            if (dbCarPlace.HasPlacesNearPets != rzdCar.HasPlacesNearPets)
+                changes[nameof(dbCarPlace.HasPlacesNearPets)] = JsonSerializer.Serialize(dbCarPlace.HasPlacesNearPets);
+
+            if (dbCarPlace.IsAdditionalMealOptionPossible != rzdCar.IsAdditionalMealOptionPossible)
+                changes[nameof(dbCarPlace.IsAdditionalMealOptionPossible)] = JsonSerializer.Serialize(dbCarPlace.IsAdditionalMealOptionPossible);
+
+            if (dbCarPlace.IsAdditionalPassengerAllowed != rzdCar.IsAdditionalPassengerAllowed)
+                changes[nameof(dbCarPlace.IsAdditionalPassengerAllowed)] = JsonSerializer.Serialize(dbCarPlace.IsAdditionalPassengerAllowed);
+
+            if (dbCarPlace.IsBranded != rzdCar.IsBranded)
+                changes[nameof(dbCarPlace.IsBranded)] = JsonSerializer.Serialize(dbCarPlace.IsBranded);
+
+            if (dbCarPlace.IsBuffet != rzdCar.IsBuffet)
+                changes[nameof(dbCarPlace.IsBuffet)] = JsonSerializer.Serialize(dbCarPlace.IsBuffet);
+
+            if (dbCarPlace.IsCarTransportationCoach != rzdCar.IsCarTransportationCoach)
+                changes[nameof(dbCarPlace.IsCarTransportationCoach)] = JsonSerializer.Serialize(dbCarPlace.IsCarTransportationCoach);
+
+            if (dbCarPlace.IsChildTariffTypeAllowed != rzdCar.IsChildTariffTypeAllowed)
+                changes[nameof(dbCarPlace.IsChildTariffTypeAllowed)] = JsonSerializer.Serialize(dbCarPlace.IsChildTariffTypeAllowed);
+
+            if (dbCarPlace.IsForDisabledPersons != rzdCar.IsForDisabledPersons)
+                changes[nameof(dbCarPlace.IsForDisabledPersons)] = JsonSerializer.Serialize(dbCarPlace.IsForDisabledPersons);
+
+            if (dbCarPlace.IsMealOptionPossible != rzdCar.IsMealOptionPossible)
+                changes[nameof(dbCarPlace.IsMealOptionPossible)] = JsonSerializer.Serialize(dbCarPlace.IsMealOptionPossible);
+
+            if (dbCarPlace.IsOnRequestMealOptionPossible != rzdCar.IsOnRequestMealOptionPossible)
+                changes[nameof(dbCarPlace.IsOnRequestMealOptionPossible)] = JsonSerializer.Serialize(dbCarPlace.IsOnRequestMealOptionPossible);
+
+            if (dbCarPlace.IsTwoStorey != rzdCar.IsTwoStorey)
+                changes[nameof(dbCarPlace.IsTwoStorey)] = JsonSerializer.Serialize(dbCarPlace.IsTwoStorey);
+
             if (dbCarPlace.MaxPrice != rzdCar.MaxPrice)
                 changes[nameof(dbCarPlace.MaxPrice)] = JsonSerializer.Serialize(dbCarPlace.MaxPrice);
+
+            if (dbCarPlace.MealSalesOpenedTill != new DateTimeOffset(rzdCar.MealSalesOpenedTill, TimeSpan.FromHours(3)).ToUniversalTime())
+                changes[nameof(dbCarPlace.MealSalesOpenedTill)] = JsonSerializer.Serialize(dbCarPlace.MealSalesOpenedTill.ToUniversalTime());
 
             if (dbCarPlace.MinPrice != rzdCar.MinPrice)
                 changes[nameof(dbCarPlace.MinPrice)] = JsonSerializer.Serialize(dbCarPlace.MinPrice);
 
+            if (dbCarPlace.OnlyNonRefundableTariff != rzdCar.OnlyNonRefundableTariff)
+                changes[nameof(dbCarPlace.OnlyNonRefundableTariff)] = JsonSerializer.Serialize(dbCarPlace.OnlyNonRefundableTariff);
+
+            if (dbCarPlace.PassengerSpecifyingRules != rzdCar.PassengerSpecifyingRules)
+                changes[nameof(dbCarPlace.PassengerSpecifyingRules)] = dbCarPlace.PassengerSpecifyingRules;
+
+            if (dbCarPlace.PlaceReservationType != rzdCar.PlaceReservationType)
+                changes[nameof(dbCarPlace.PlaceReservationType)] = dbCarPlace.PlaceReservationType;
+
+            if (dbCarPlace.PlacesWithConditionalRefundableTariffQuantity != rzdCar.PlacesWithConditionalRefundableTariffQuantity)
+                changes[nameof(dbCarPlace.PlacesWithConditionalRefundableTariffQuantity)] = JsonSerializer.Serialize(dbCarPlace.PlacesWithConditionalRefundableTariffQuantity);
 
             if (dbCarPlace.ServiceClass != rzdCar.ServiceClass)
                 changes[nameof(dbCarPlace.ServiceClass)] = dbCarPlace.ServiceClass;
@@ -447,7 +509,7 @@ namespace RZD.Application.Services
         {
             var changes = new Dictionary<string, string>();
 
-            if (newDbTrain.ArrivalDateTime != train.ArrivalDateTime)
+            if (new DateTimeOffset(newDbTrain.ArrivalDateTime, TimeSpan.FromHours(3)).ToUniversalTime() != train.ArrivalDateTime)
                 changes["ArrivalDateTime"] = JsonSerializer.Serialize(train.ArrivalDateTime.ToUniversalTime());
 
             if (newDbTrain.ArrivalStopTime != train.ArrivalStopTime)
@@ -456,7 +518,7 @@ namespace RZD.Application.Services
             if (!newDbTrain.CarServices.OrderBy(x => x).SequenceEqual(train.CarServices.OrderBy(x => x)))
                 changes["CarServices"] = JsonSerializer.Serialize(train.CarServices);
 
-            if (newDbTrain.DepartureDateTime != train.DepartureDateTime)
+            if (new DateTimeOffset(newDbTrain.DepartureDateTime, TimeSpan.FromHours(3)).ToUniversalTime() != train.DepartureDateTime)
                 changes["DepartureDateTime"] = JsonSerializer.Serialize(train.DepartureDateTime.ToUniversalTime());
 
             if (newDbTrain.DepartureStopTime != train.DepartureStopTime)
@@ -521,6 +583,15 @@ namespace RZD.Application.Services
 
             if (newDbTrain.TripDuration != train.TripDuration)
                 changes["TripDuration"] = JsonSerializer.Serialize(train.TripDuration);
+
+            if (newDbTrain.OriginStationCode != train.OriginStationCode)
+                changes["OriginStationCode"] = train.OriginStationCode;
+
+            if (newDbTrain.DestinationStationCode != train.DestinationStationCode)
+                changes["DestinationStationCode"] = train.DestinationStationCode;
+
+            if (newDbTrain.FinalTrainStationCode != train.FinalTrainStationCode)
+                changes["FinalTrainStationCode"] = train.FinalTrainStationCode;
 
             return changes;
         }
