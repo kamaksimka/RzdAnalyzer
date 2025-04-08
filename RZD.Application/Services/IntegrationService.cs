@@ -138,7 +138,8 @@ namespace RZD.Application.Services
                             {
                                 dbTrain = new Train()
                                 {
-                                    CreatedDate = DateTimeOffset.UtcNow
+                                    CreatedDate = DateTimeOffset.UtcNow,
+                                    TrackedRouteId = trackedRoute.Id,
                                 };
                                 await UpdateDbTrainAsync(dbTrain, train);
                                 await _ctx.Trains.AddAsync(dbTrain);
