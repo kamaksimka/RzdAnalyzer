@@ -131,12 +131,16 @@ namespace RZD.Application.Services
                         foreach (var train in trainResponse.Trains)
                         {
                             var departureDateTimeUtc = new DateTimeOffset(train.DepartureDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
+                            logger.LogWarning($"TrainNumber:{train.TrainNumber} OriginStationCode:{train.OriginStationCode} DestinationStationCode:{train.DestinationStationCode} DepartureDateTime:{train.DepartureDateTime}");
+                            logger.LogWarning($"departureDateTimeUtc:{departureDateTimeUtc}");
                             var dbTrain = await _ctx.Trains
                                 .Where(x => x.TrainNumber == train.TrainNumber
                                     && x.OriginStationCode == train.OriginStationCode
                                     && x.DestinationStationCode == train.DestinationStationCode
                                     && x.DepartureDateTime == departureDateTimeUtc)
                                 .FirstOrDefaultAsync();
+
+                            logger.LogWarning($"dbTrain.Id:{dbTrain?.Id??-1}");
 
                             if (dbTrain == null)
                             {
