@@ -14,5 +14,6 @@
         public decimal? MinPrice { get; set; }
         public TimeSpan? FastestTrain {  get; set; }
         public TimeSpan? SlowestTrain { get; set; }
+        public double AvarageTripDistance { get; set; }
     }
 }

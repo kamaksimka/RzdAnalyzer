@@ -10,6 +10,8 @@
   <script lang="ts">
     import { defineComponent } from 'vue';
     import Header from './components/Header.vue';
+    import 'ag-grid-community/styles/ag-grid.css';
+    import 'ag-grid-community/styles/ag-theme-alpine.css';
 
     export default defineComponent({
       name: 'App',

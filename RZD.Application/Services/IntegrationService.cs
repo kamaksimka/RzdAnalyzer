@@ -41,66 +41,7 @@ namespace RZD.Application.Services
 
             foreach (var ch in AlphabetHelper.RussianAlphabet)
             {
-                var suggests = await _api.SuggestsAsync(ch);
-
-                #region create-update Cities
-
-                if (suggests.City != null)
-                {
-                    var cities = suggests.City;
-
-                    var dbCities = await _ctx.Cities
-                        .Where(x => cities.Select(y => y.NodeId).ToList().Contains(x.NodeId))
-                        .ToListAsync();
-
-                    var newDbCities = cities
-                        .Where(x => !dbCities.Any(y => y.NodeId == x.NodeId))
-                        .Select(x => new City
-                        {
-                            NodeId = x.NodeId,
-                            ExpressCode = x.ExpressCode,
-                            ExpressCodes = x.ExpressCodes,
-                            ForeignCode = x.ForeignCode,
-                            Name = x.Name,
-                            Region = x.Region,
-                            CreatedDate = DateTimeOffset.Now.ToUniversalTime(),
-                        }).ToList();
-
-                    await _ctx.Cities.AddRangeAsync(newDbCities);
-
-                    await _ctx.SaveChangesAsync();
-                }
-
-                #endregion
-
-                #region create-update Trains
-
-                if (suggests.Train != null)
-                {
-
-                    var trainStations = suggests.Train;
-
-                    var dbTrainStations = await _ctx.TrainStations
-                        .Where(x => trainStations.Select(y => y.NodeId).ToList().Contains(x.NodeId))
-                        .ToListAsync();
-
-                    var newDbTrainStations = trainStations
-                        .Where(x => !dbTrainStations.Any(y => y.NodeId == x.NodeId))
-                        .Select(x => new TrainStation
-                        {
-                            NodeId = x.NodeId,
-                            ExpressCode = x.ExpressCode,
-                            ForeignCode = x.ForeignCode,
-                            Name = x.Name,
-                            Region = x.Region,
-                            CreatedDate = DateTimeOffset.Now.ToUniversalTime(),
-                        }).ToList();
-
-                    await _ctx.TrainStations.AddRangeAsync(newDbTrainStations);
-
-                    await _ctx.SaveChangesAsync();
-                }
-                #endregion
+                await RefreshCitiesAsync(ch);
             }
 
             logger.LogInformation("Finished RefreshCitiesAsync");
@@ -130,9 +71,10 @@ namespace RZD.Application.Services
 
                         foreach (var train in trainResponse.Trains)
                         {
+                            await UpdateExpressCodes(train);
+
                             var departureDateTimeUtc = new DateTimeOffset(train.DepartureDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
-                            logger.LogWarning($"TrainNumber:{train.TrainNumber} OriginStationCode:{train.OriginStationCode} DestinationStationCode:{train.DestinationStationCode} DepartureDateTime:{train.DepartureDateTime}");
-                            logger.LogWarning($"departureDateTimeUtc:{departureDateTimeUtc}");
+
                             var dbTrain = await _ctx.Trains
                                 .Where(x => x.TrainNumber == train.TrainNumber
                                     && x.OriginStationCode == train.OriginStationCode
@@ -140,7 +82,7 @@ namespace RZD.Application.Services
                                     && x.DepartureDateTime == departureDateTimeUtc)
                                 .FirstOrDefaultAsync();
 
-                            logger.LogWarning($"dbTrain.Id:{dbTrain?.Id??-1}");
+
 
                             if (dbTrain == null)
                             {
@@ -173,7 +115,7 @@ namespace RZD.Application.Services
                                         await _ctx.EntityHistories.AddAsync(entityHistory);
                                     }
 
-                                    
+
                                 }
                             }
                             await _ctx.SaveChangesAsync();
@@ -239,7 +181,7 @@ namespace RZD.Application.Services
 
                         dbCarPlace.IsFree = false;
                     }
-                    else if(!dbCarPlace.IsFree && carPlaceNumbers.Any(x => x == dbCarPlace.CarPlaceNumber))
+                    else if (!dbCarPlace.IsFree && carPlaceNumbers.Any(x => x == dbCarPlace.CarPlaceNumber))
                     {
                         await _ctx.EntityHistories.AddAsync(new EntityHistory()
                         {
@@ -481,7 +423,7 @@ namespace RZD.Application.Services
             dbTrain.ArrivalDateTime = new DateTimeOffset(train.ArrivalDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
             dbTrain.ArrivalStopTime = train.ArrivalStopTime;
             dbTrain.CarServices = train.CarServices;
-            dbTrain.DepartureDateTime = new DateTimeOffset(train.DepartureDateTime,TimeSpan.FromHours(3)).ToUniversalTime();
+            dbTrain.DepartureDateTime = new DateTimeOffset(train.DepartureDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
             dbTrain.DepartureStopTime = train.DepartureStopTime;
             dbTrain.DisplayTrainNumber = train.DisplayTrainNumber;
             dbTrain.HasCarTransportationCoaches = train.HasCarTransportationCoaches;
@@ -610,6 +552,85 @@ namespace RZD.Application.Services
                 DateStart = DateTimeOffset.UtcNow,
             });
             await _ctx.SaveChangesAsync();
+        }
+
+        private async Task UpdateExpressCodes(RzdTrain rzdTrain)
+        {
+            if (!_ctx.Cities.Any(x => x.ExpressCode == rzdTrain.OriginStationCode)
+                && !_ctx.TrainStations.Any(x => x.ExpressCode == rzdTrain.OriginStationCode))
+            {
+                await RefreshCitiesAsync(rzdTrain.OriginStationName);
+            }
+
+            if (!_ctx.Cities.Any(x => x.ExpressCode == rzdTrain.DestinationStationCode)
+                && !_ctx.TrainStations.Any(x => x.ExpressCode == rzdTrain.DestinationStationCode))
+            {
+                await RefreshCitiesAsync(rzdTrain.DestinationName);
+            }
+        }
+
+        private async Task RefreshCitiesAsync(string query)
+        {
+            var suggests = await _api.SuggestsAsync(query);
+
+            #region create-update Cities
+
+            if (suggests.City != null)
+            {
+                var cities = suggests.City;
+
+                var dbCities = await _ctx.Cities
+                    .Where(x => cities.Select(y => y.NodeId).ToList().Contains(x.NodeId))
+                    .ToListAsync();
+
+                var newDbCities = cities
+                    .Where(x => !dbCities.Any(y => y.NodeId == x.NodeId))
+                    .Select(x => new City
+                    {
+                        NodeId = x.NodeId,
+                        ExpressCode = x.ExpressCode,
+                        ExpressCodes = x.ExpressCodes,
+                        ForeignCode = x.ForeignCode,
+                        Name = x.Name,
+                        Region = x.Region,
+                        CreatedDate = DateTimeOffset.Now.ToUniversalTime(),
+                    }).ToList();
+
+                await _ctx.Cities.AddRangeAsync(newDbCities);
+
+                await _ctx.SaveChangesAsync();
+            }
+
+            #endregion
+
+            #region create-update Trains
+
+            if (suggests.Train != null)
+            {
+
+                var trainStations = suggests.Train;
+
+                var dbTrainStations = await _ctx.TrainStations
+                    .Where(x => trainStations.Select(y => y.NodeId).ToList().Contains(x.NodeId))
+                    .ToListAsync();
+
+                var newDbTrainStations = trainStations
+                    .Where(x => !dbTrainStations.Any(y => y.NodeId == x.NodeId))
+                    .Select(x => new TrainStation
+                    {
+                        NodeId = x.NodeId,
+                        ExpressCode = x.ExpressCode,
+                        ForeignCode = x.ForeignCode,
+                        Name = x.Name,
+                        Region = x.Region,
+                        CreatedDate = DateTimeOffset.Now.ToUniversalTime(),
+                    }).ToList();
+
+                await _ctx.TrainStations.AddRangeAsync(newDbTrainStations);
+
+                await _ctx.SaveChangesAsync();
+            }
+            #endregion
         }
     }
 }

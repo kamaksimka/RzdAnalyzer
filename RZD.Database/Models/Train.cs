@@ -32,7 +32,7 @@
         public int TripDistance { get; set; }
         public decimal TripDuration { get; set; }
 
-        public virtual List<CarPlace> Cars { get; set; }
+        public virtual List<CarPlace> CarPlaces { get; set; }
         public virtual Route Route { get; set; }
 
         public string OriginStationCode { get; set; }

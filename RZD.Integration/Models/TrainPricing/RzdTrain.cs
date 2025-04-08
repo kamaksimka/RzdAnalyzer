@@ -15,8 +15,10 @@ namespace RZD.Integration.Models.TrainPricing
         public DateTime DepartureDateTime { get; set; }
         public int DepartureStopTime { get; set; }
         public string DestinationStationCode { get; set; }
+        public string DestinationName { get; set; }
         public string DisplayTrainNumber { get; set; }
         public string FinalTrainStationCode { get; set; }
+        public string FinalStationName { get; set; }
         public bool HasCarTransportationCoaches { get; set; }
         public bool HasDynamicPricingCars { get; set; }
         public bool HasTwoStoreyCars { get; set; }
@@ -33,6 +35,7 @@ namespace RZD.Integration.Models.TrainPricing
         public DateTime LocalArrivalDateTime { get; set; }
         public DateTime LocalDepartureDateTime { get; set; }
         public string OriginStationCode { get; set; }
+        public string OriginStationName { get; set; }   
         public string TrainBrandCode { get; set; }
         public string TrainDescription { get; set; }
         public string TrainNumber { get; set; }

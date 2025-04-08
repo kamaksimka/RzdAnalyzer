@@ -15,29 +15,29 @@ namespace RZD.Application.Services
             _context = context;
         }
 
+        public IQueryable<TrackedRouteModel> TrackedRouteModelQuery => from tr in _context.TrackedRoutes
+                                                                       join co in _context.Cities on tr.OriginExpressCode equals co.ExpressCode into coJoined
+                                                                       from co in coJoined.DefaultIfEmpty()
+                                                                       join tso in _context.TrainStations on tr.OriginExpressCode equals tso.ExpressCode into tsoJoined
+                                                                       from tso in tsoJoined.DefaultIfEmpty()
+                                                                       join cd in _context.Cities on tr.DestinationExpressCode equals cd.ExpressCode into cdJoined
+                                                                       from cd in cdJoined.DefaultIfEmpty()
+                                                                       join tsd in _context.TrainStations on tr.OriginExpressCode equals tsd.ExpressCode into tsdJoined
+                                                                       from tsd in tsdJoined.DefaultIfEmpty()
+                                                                       where !tr.IsDeleted
+                                                                       select new TrackedRouteModel
+                                                                       {
+                                                                           Id = tr.Id,
+                                                                           OriginName = co != null ? co.Name : tso.Name,
+                                                                           OriginRegion = co != null ? co.Region : tso.Region,
+                                                                           DestinationName = cd != null ? cd.Name : tsd.Name,
+                                                                           DestinationRegion = cd != null ? cd.Region : tsd.Region,
+                                                                           CreatedDate = tr.CreatedDate
+                                                                       };
+
         public async Task<List<TrackedRouteModel>> GetAllAsync()
         {
-            var trackedRoutes = from tr in _context.TrackedRoutes
-                                join co in _context.Cities on tr.OriginExpressCode equals co.ExpressCode into coJoined
-                                from co in coJoined.DefaultIfEmpty()
-                                join tso in _context.TrainStations on tr.OriginExpressCode equals tso.ExpressCode into tsoJoined
-                                from tso in tsoJoined.DefaultIfEmpty()
-                                join cd in _context.Cities on tr.DestinationExpressCode equals cd.ExpressCode into cdJoined
-                                from cd in cdJoined.DefaultIfEmpty()
-                                join tsd in _context.TrainStations on tr.OriginExpressCode equals tsd.ExpressCode into tsdJoined
-                                from tsd in tsdJoined.DefaultIfEmpty()
-                                where !tr.IsDeleted
-                                select new TrackedRouteModel
-                                {
-                                    Id = tr.Id,
-                                    OriginName = co != null ? co.Name : tso.Name,
-                                    OriginRegion = co != null ? co.Region : tso.Region,
-                                    DestinationName = cd != null ? cd.Name : tsd.Name,
-                                    DestinationRegion = cd != null ? cd.Region : tsd.Region,
-                                    CreatedDate = tr.CreatedDate
-                                };
-
-            return await trackedRoutes.ToListAsync();
+            return await TrackedRouteModelQuery.ToListAsync();
         }
 
         public async Task DeleteAsync(DeleteTrackedRouteRequest request)
@@ -90,30 +90,25 @@ namespace RZD.Application.Services
 
         public async Task<RouteStatistic> GetRouteStatistic(RouteStatisticRequest request)
         {
+            var trackedRouteModel = await TrackedRouteModelQuery.Where(x => x.Id == request.TrackedRouteId).FirstOrDefaultAsync();
             var routeStatistic = await (from tr in _context.TrackedRoutes
-                                        join co in _context.Cities on tr.OriginExpressCode equals co.ExpressCode into coJoined
-                                        from co in coJoined.DefaultIfEmpty()
-                                        join tso in _context.TrainStations on tr.OriginExpressCode equals tso.ExpressCode into tsoJoined
-                                        from tso in tsoJoined.DefaultIfEmpty()
-                                        join cd in _context.Cities on tr.DestinationExpressCode equals cd.ExpressCode into cdJoined
-                                        from cd in cdJoined.DefaultIfEmpty()
-                                        join tsd in _context.TrainStations on tr.OriginExpressCode equals tsd.ExpressCode into tsdJoined
-                                        from tsd in tsdJoined.DefaultIfEmpty()
                                         where !tr.IsDeleted && tr.Id == request.TrackedRouteId
                                         select new RouteStatistic
                                         {
-                                            OriginStationName = co != null ? co.Name : tso.Name,
-                                            OriginRegion = co != null ? co.Region : tso.Region,
-                                            DestinationStationName = cd != null ? cd.Name : tsd.Name,
-                                            DestinationRegion = cd != null ? cd.Region : tsd.Region,
                                             NumberTrains = tr.Trains.Count,
-                                            NumberCarPlaces = tr.Trains.SelectMany(x => x.Cars).Count(),
+                                            NumberCarPlaces = tr.Trains.SelectMany(x => x.CarPlaces).Count(),
                                             StartTrackedDate = tr.CreatedDate,
-                                            MaxPrice = tr.Trains.Any() ? tr.Trains.SelectMany(x => x.Cars).Select(x => x.MaxPrice).Max() : null,
-                                            MinPrice = tr.Trains.Any() ? tr.Trains.SelectMany(x => x.Cars).Select(x => x.MinPrice).Min() : null,
+                                            MaxPrice = tr.Trains.Any() ? tr.Trains.SelectMany(x => x.CarPlaces).Select(x => x.MaxPrice).Max() : null,
+                                            MinPrice = tr.Trains.Any() ? tr.Trains.SelectMany(x => x.CarPlaces).Select(x => x.MinPrice).Min() : null,
                                             FastestTrain = tr.Trains.Any() ? tr.Trains.Select(x => x.ArrivalDateTime - x.DepartureDateTime).Min() : null,
                                             SlowestTrain = tr.Trains.Any() ? tr.Trains.Select(x => x.ArrivalDateTime - x.DepartureDateTime).Max() : null,
+                                            AvarageTripDistance = tr.Trains.Any() ? tr.Trains.Select(x => x.TripDistance).Average() : 0,
                                         }).FirstOrDefaultAsync();
+
+            routeStatistic.OriginStationName = trackedRouteModel.OriginName;
+            routeStatistic.OriginRegion = trackedRouteModel.OriginRegion;
+            routeStatistic.DestinationStationName = trackedRouteModel.DestinationName;
+            routeStatistic.DestinationRegion = trackedRouteModel.DestinationRegion;
 
             return routeStatistic!;
         }
