@@ -1,9 +1,18 @@
 <template>
   <div class="train-grid">
-    <!-- Добавление выбора даты -->
-    <div class="date-picker">
-      <label for="date">Выберите дату:</label>
-      <input type="date" id="date" v-model="selectedDate" @change="onDateChange" />
+    <!-- Добавление выбора даты в строчку -->
+    <div class="date-picker-container">
+      <div class="date-picker">
+        <label for="dateFrom">Выберите дату начала:</label>
+        <input type="date" id="dateFrom" v-model="selectedDateFrom"
+               :min="minDate" :max="maxDate" @change="onDateChange" />
+      </div>
+
+      <div class="date-picker">
+        <label for="dateTo">Выберите дату конца:</label>
+        <input type="date" id="dateTo" v-model="selectedDateTo"
+               :min="minDate" :max="maxDate" @change="onDateChange" />
+      </div>
     </div>
 
     <div class="total-trains">
@@ -25,8 +34,9 @@
   </div>
 </template>
 
+
 <script lang="ts">
-  import { defineComponent, ref, watch } from 'vue';
+  import { defineComponent, ref, onMounted } from 'vue';
   import { AgGridVue } from 'ag-grid-vue3';
   import { TrainService } from '@/services/trainService';
   import ServiceIconsRenderer from './ServiceIconsRenderer.vue';
@@ -43,7 +53,11 @@
       }
     },
     setup(props) {
-      const selectedDate = ref<string>(new Date().toISOString().split('T')[0]); // Инициализация с текущей датой
+      const selectedDateFrom = ref<string>(new Date().toISOString().split('T')[0]); // Инициализация с текущей датой
+      const selectedDateTo = ref<string>(new Date().toISOString().split('T')[0]); // Инициализация с текущей датой
+
+      const minDate = ref<string>('');
+      const maxDate = ref<string>('');
 
       const frameworkComponents = {
         serviceIconsRenderer: ServiceIconsRenderer
@@ -51,55 +65,57 @@
       const totalTrains = ref<number>(0); // Общее количество поездов
       // Определяем столбцы. Например:
       const columnDefs = ref([
-      { field: 'trainNumber', headerName: '№ Поезда', sortable: true, filter: true },
-      {
-        field: 'departureDateTime',
-        headerName: 'Отправление',
-        sortable: true,
-        filter: true,
-        valueFormatter: (params: any) => new Date(params.value).toLocaleString('ru-RU')
-      },
-      {
-        field: 'arrivalDateTime',
-        headerName: 'Прибытие',
-        sortable: true,
-        filter: true,
-        valueFormatter: (params: any) => new Date(params.value).toLocaleString('ru-RU')
-      },
-      {
-        headerName: 'Услуги',
-        field: 'carServices',
-        cellRenderer: 'serviceIconsRenderer'
-      },
-      {
-        field: 'tripDuration',
-        headerName: 'Длительность',
-        sortable: true,
-        filter: true,
-        valueFormatter: (params: any) => convertMinutesToHours(params.value) // Преобразуем минуты в часы
-      },
-      {
-        field: 'minPrice',
-        headerName: 'Минимальная цена',
-        sortable: true,
-        filter: true,
-        valueFormatter: (params: any) => params.value?.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
-      },
-      {
-        field: 'maxPrice',
-        headerName: 'Максимальная цена',
-        sortable: true,
-        filter: true,
-        valueFormatter: (params: any) => params.value?.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
-      },
-      {
-        field: 'createdDate',
-        headerName: 'Дата начала отслеживания',
-        sortable: true,
-        filter: true,
-        valueFormatter: (params: any) => new Date(params.value).toLocaleDateString('ru-RU')
-      },
-    ]);
+        { field: 'trainNumber', headerName: '№ Поезда', sortable: true, filter: true },
+        {
+          field: 'departureDateTime',
+          headerName: 'Отправление',
+          sortable: true,
+          filter: true,
+          valueFormatter: (params: any) => new Date(params.value).toLocaleString('ru-RU')
+        },
+        {
+          field: 'arrivalDateTime',
+          headerName: 'Прибытие',
+          sortable: true,
+          filter: true,
+          valueFormatter: (params: any) => new Date(params.value).toLocaleString('ru-RU')
+        },
+        {
+          headerName: 'Услуги',
+          field: 'carServices',
+          cellRenderer: 'serviceIconsRenderer'
+        },
+        {
+          field: 'tripDuration',
+          headerName: 'Длительность',
+          sortable: true,
+          filter: true,
+          valueFormatter: (params: any) => convertMinutesToHours(params.value) // Преобразуем минуты в часы
+        },
+        {
+          field: 'minPrice',
+          headerName: 'Минимальная цена',
+          sortable: true,
+          filter: true,
+          valueFormatter: (params: any) => params.value?.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
+        },
+        {
+          field: 'maxPrice',
+          headerName: 'Максимальная цена',
+          sortable: true,
+          filter: true,
+          valueFormatter: (params: any) => params.value?.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
+        },
+        {
+          field: 'createdDate',
+          headerName: 'Дата начала отслеживания',
+          sortable: true,
+          filter: true,
+          valueFormatter: (params: any) => new Date(params.value).toLocaleDateString('ru-RU')
+        },
+      ]);
+
+
 
       // Общие настройки столбцов
       const defaultColDef = ref({
@@ -110,30 +126,35 @@
         minWidth: 120,
       });
 
-      // Данные строк
       const rowData = ref<any[]>([]);
 
-      // Обработчик готовности сетки (Grid Ready)
       const onGridReady = async (params: any) => {
-        // При первой загрузке данных для текущей даты
         await fetchTrainData();
       };
 
-      // Функция для получения данных с сервера
       const fetchTrainData = async () => {
         try {
-          const response = await TrainService.getTrainsByRouteIdAndDate(props.trackedRouteId, selectedDate.value);
+          const response = await TrainService.getTrainsByRouteIdAndDate(props.trackedRouteId, selectedDateFrom.value, selectedDateTo.value);
           const data = await response.data;
           rowData.value = data;
-           totalTrains.value = data.length; 
+          totalTrains.value = data.length;
         } catch (error) {
           console.error('Ошибка при загрузке поездов:', error);
         }
       };
 
-      // Обработчик изменения даты
+      const fetchDateRange = async () => {
+        try {
+          const response = await TrainService.getTrainGridInitModel(props.trackedRouteId);
+          minDate.value = response.data.minDate.split('T')[0];
+          maxDate.value = response.data.maxDate.split('T')[0];
+        } catch (error) {
+          console.error('Ошибка при получении диапазона дат:', error);
+        }
+      };
+
+
       const onDateChange = () => {
-        // При изменении даты обновляем данные
         fetchTrainData();
       };
 
@@ -143,8 +164,12 @@
         return `${hours} ч ${mins} мин`;
       };
 
-      // Для передачи trackedRouteId в контекст аг‑Grid (если необходимо)
+
       const gridContext = { trackedRouteId: 0 };
+
+      onMounted(() => {
+        fetchDateRange();
+      });
 
       return {
         columnDefs,
@@ -153,10 +178,13 @@
         onGridReady,
         gridContext,
         frameworkComponents,
-        selectedDate,
+        selectedDateFrom,
+        selectedDateTo,
         onDateChange,
         convertMinutesToHours,
-        totalTrains
+        totalTrains,
+        minDate,
+        maxDate
       };
     },
   });
@@ -231,6 +259,34 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
+  /* Стили для контейнера выбора даты */
+  .date-picker-container {
+    display: flex;
+    gap: 20px; /* Отступ между полями */
+    margin-bottom: 20px;
+    align-items: center; /* Выравнивание по вертикали */
+  }
 
+  .date-picker label {
+    margin-right: 10px; /* Отступ справа от метки */
+  }
 
+  .date-picker input {
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+    transition: border-color 0.3s;
+  }
+
+    .date-picker input:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+  .train-grid {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+  }
 </style>

@@ -40,12 +40,12 @@
         </div>
         <div class="statistic-item">
           <font-awesome-icon icon="bolt" class="icon" />
-          <strong>Самый быстрый поезд:</strong> {{ routeStatistic? formatTime(routeStatistic.fastestTrain) }}
+          <strong>Самый быстрый поезд:</strong> {{ routeStatistic? formatTime(routeStatistic.fastestTrain):"" }}
         </div>
 
         <div class="statistic-item">
           <font-awesome-icon icon="hourglass-end" class="icon" />
-          <strong>Самый медленный поезд:</strong> {{ routeStatistic? formatTime(routeStatistic.slowestTrain) }}
+          <strong>Самый медленный поезд:</strong> {{ routeStatistic? formatTime(routeStatistic.slowestTrain):"" }}
         </div>
       </div>
     </div>

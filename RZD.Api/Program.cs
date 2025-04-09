@@ -82,17 +82,17 @@ app.UseSwaggerUI();
 app.MapControllers();
 
 
-app.MapPost("TrainPricing", async ([FromBody] TrainPricingRequest request, IOptions<RzdConfig> options) =>
-{
-    var rzdApi = new RzdApi(options.Value);
-    return await rzdApi.TrainPricingAsync(request.OriginCode, request.DestinationCode, request.DepartureDate);
-});
+//app.MapPost("TrainPricing", async ([FromBody] TrainPricingRequest request, IOptions<RzdConfig> options) =>
+//{
+//    var rzdApi = new RzdApi(options.Value);
+//    return await rzdApi.TrainPricingAsync(request.OriginCode, request.DestinationCode, request.DepartureDate);
+//});
 
-app.MapPost("CarPricing", async ([FromBody] CarPricingRequest request,IOptions<RzdConfig> options) =>
-{
-    var rzdApi = new RzdApi(options.Value);
-    return await rzdApi.CarPricingAsync(request.OriginCode, request.DestinationCode, request.DepartureDate, request.TrainNumber);
-});
+//app.MapPost("CarPricing", async ([FromBody] CarPricingRequest request,IOptions<RzdConfig> options) =>
+//{
+//    var rzdApi = new RzdApi(options.Value);
+//    return await rzdApi.CarPricingAsync(request.OriginCode, request.DestinationCode, request.DepartureDate, request.TrainNumber);
+//});
 
 
 using (var scope = app.Services.CreateAsyncScope())

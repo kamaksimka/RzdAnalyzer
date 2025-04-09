@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RZD.Application.Helpers;
 using RZD.Application.Models;
 using RZD.Database;
 using System;
@@ -20,10 +21,23 @@ namespace RZD.Application.Services
             _trackedRouteService = trackedRouteService;
         }
 
+        public async Task<TrainGridInitModel> GetTrainGridInitModel(TrainGridInitRequest request)
+        {
+            var trainGridInitModel = await _context.TrackedRoutes
+                .Where( x => x.Id == request.TrackedRouteId )
+                .Select(x => new TrainGridInitModel
+                {
+                    MinDate = x.Trains.Select(x => x.DepartureDateTime).Min().Date,
+                    MaxDate = x.Trains.Select(x => x.DepartureDateTime).Max().Date,
+                }).FirstAsync();
+
+            return trainGridInitModel;
+        }
+
         public async Task<List<TrainTableModel>> GetTrainsByTrackedRouteId(GetTrainsRequest request)
         {
-            var startDate = request.Date.Date.ToUniversalTime();
-            var endDate = startDate.AddDays(1).ToUniversalTime();
+            var startDate = request.DateFrom.Date.ToMoscowTime().ToUniversalTime();
+            var endDate = request.DateTo.Date.ToMoscowTime().ToUniversalTime();
 
             var trainModels = await _context.Trains
                 .Where(x => x.TrackedRouteId == request.TrackedRouteId &&  x.DepartureDateTime >= startDate && x.DepartureDateTime <= endDate)

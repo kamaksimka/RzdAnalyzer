@@ -18,5 +18,9 @@ namespace RZD.Api.Controllers
         [HttpPost("trains")]
         public async Task<List<TrainTableModel>> GetTrains([FromBody] GetTrainsRequest request)
             => await _trainService.GetTrainsByTrackedRouteId(request);
+
+        [HttpPost("trainGridInitModel")]
+        public async Task<TrainGridInitModel> GetTrainGridInitModel(TrainGridInitRequest request)
+            => await _trainService.GetTrainGridInitModel(request);
     }
 }
