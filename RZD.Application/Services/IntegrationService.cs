@@ -12,6 +12,7 @@ using RZD.Integration.Models.CarPricing;
 using RZD.Integration.Models.TrainPricing;
 using System.Diagnostics;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RZD.Application.Services
 {
@@ -20,7 +21,9 @@ namespace RZD.Application.Services
         private readonly DataContext _ctx;
         private readonly ILogger<IntegrationService> logger;
         private readonly RzdApi _api;
-        RzdConfig rzdConfig;
+        private RzdConfig rzdConfig;
+        private TimeSpan RequestTime;
+         
 
         public IntegrationService(DataContext ctx, IOptions<RzdConfig> options, ILogger<IntegrationService> logger)
         {
@@ -28,6 +31,7 @@ namespace RZD.Application.Services
             rzdConfig = options.Value;
             this.logger = logger;
             _api = new RzdApi(rzdConfig);
+            RequestTime = TimeSpan.Zero;
         }
 
         public void Dispose()
@@ -52,6 +56,7 @@ namespace RZD.Application.Services
             logger.LogInformation($"Started RefreshTrainsAsync");
             var dtStart = DateTimeOffset.Now;
             var numberOfTrains = 0;
+            RequestTime = TimeSpan.Zero;
 
             var trackedRoutes = _ctx.TrackedRoutes.Where(x => !x.IsDeleted).ToList();
 
@@ -63,7 +68,11 @@ namespace RZD.Application.Services
                 {
                     try
                     {
+                        var requestStart = DateTime.Now;
                         var trainResponse = await _api.TrainPricingAsync(trackedRoute.OriginExpressCode, trackedRoute.DestinationExpressCode, date);
+                        var requestFinish = DateTime.Now;
+                        RequestTime += requestFinish - requestStart;
+
 
                         numberOfTrains += trainResponse.Trains.Count;
 
@@ -135,7 +144,7 @@ namespace RZD.Application.Services
             }
             var dtFinish = DateTimeOffset.Now;
             var timeTaken = dtFinish - dtStart;
-            var logComment = $"Finished RefreshTrainsAsync. Time taken: {timeTaken}, number of trains: {numberOfTrains}";
+            var logComment = $"Finished RefreshTrainsAsync. Time taken: {timeTaken}, number of trains: {numberOfTrains}, RequestTime: {RequestTime}";
             await _ctx.Statistics.AddAsync(new Statistic
             {
                 Name = "RefreshTrainsAsync",
@@ -154,9 +163,13 @@ namespace RZD.Application.Services
             logger.LogInformation($"RefreshCarPlacesAsync for origin:{origin}, destination:{destination}, departureDate:{departureDate}, trainNumber:{trainNumber}");
             try
             {
+                var requestStart = DateTime.Now;
+                var carsResponse = await _api.CarPricingAsync(origin, destination, departureDate, trainNumber);
+                var requestFinish = DateTime.Now;
+                RequestTime += requestFinish - requestStart;
 
                 #region Сохраняем изменение флага IsFree
-                var carsResponse = await _api.CarPricingAsync(origin, destination, departureDate, trainNumber);
+
 
                 var dbCarPlaces = await _ctx.CarPlaces
                     .Where(x => x.TrainId == trainId).ToListAsync();
