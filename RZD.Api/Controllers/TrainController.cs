@@ -22,5 +22,9 @@ namespace RZD.Api.Controllers
         [HttpPost("trainGridInitModel")]
         public async Task<TrainGridInitModel> GetTrainGridInitModel(TrainGridInitRequest request)
             => await _trainService.GetTrainGridInitModel(request);
+
+        [HttpPost("freePlacesPlot")]
+        public async Task<Dictionary<DateTime,int>> GetFreePlacesPlot(TrainRequest request)
+            => await _trainService.GetFreePlacesPlot(request);
     }
 }

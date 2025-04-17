@@ -5,6 +5,8 @@ import RegisterPage from '@/pages/RegisterPage.vue';
 import TrackedRoutesPage from '@/pages/TrackedRoutesPage.vue';
 import FeedbackPage from '@/pages/FeedbackPage.vue';
 import RouteStatisticPage from '@/pages/RouteStatisticPage.vue'
+import TrainDetails from '@/pages/TrainDetails.vue'
+import FreePlacesPlot from '@/pages/FreePlacesPlot.vue'
 
 const routes = [
   {
@@ -36,6 +38,16 @@ const routes = [
     path: '/route-statistic/:id',
     name: 'route-statistic',
     component: RouteStatisticPage,
+  },
+  {
+    path: '/train-details/:id',
+    name: 'train-details',
+    component: TrainDetails,
+  },
+  {
+    path: '/train/:trainId/free-places',
+    name: 'FreePlacesPlot',
+    component: FreePlacesPlot
   }
 ];
 
