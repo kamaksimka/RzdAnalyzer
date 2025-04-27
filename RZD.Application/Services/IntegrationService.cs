@@ -133,6 +133,12 @@ namespace RZD.Application.Services
                             {
                                 await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime, train.TrainNumber, dbTrain.Id);
                             }
+                            else
+                            {
+                                await _ctx.CarPlaces
+                                    .Where(x => x.TrainId == dbTrain.Id && x.IsFree)
+                                    .ExecuteUpdateAsync(x => x.SetProperty(x=> x.IsFree,false));
+                            }
                         }
                     }
                     catch (Exception ex)
