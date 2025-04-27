@@ -135,9 +135,25 @@ namespace RZD.Application.Services
                             }
                             else
                             {
-                                await _ctx.CarPlaces
+                                var dbCarPlaces = await _ctx.CarPlaces
                                     .Where(x => x.TrainId == dbTrain.Id && x.IsFree)
-                                    .ExecuteUpdateAsync(x => x.SetProperty(x=> x.IsFree,false));
+                                    .ToListAsync();
+
+                                foreach (var dbCarPlace in dbCarPlaces) {
+                                    await _ctx.EntityHistories.AddAsync(new EntityHistory()
+                                    {
+                                        EntityTypeId = (int)EntityTypes.CarPlace,
+                                        EntityId = dbCarPlace.Id,
+                                        ChangedAt = DateTimeOffset.UtcNow,
+                                        FieldName = nameof(dbCarPlace.IsFree),
+                                        OldFieldValue = JsonSerializer.Serialize(dbCarPlace.IsFree)
+                                    });
+
+
+                                    dbCarPlace.IsFree = false;
+                                }
+
+                                await _ctx.SaveChangesAsync();
                             }
                         }
                     }
