@@ -177,7 +177,7 @@ namespace RZD.Application.Services
                 foreach (var dbCarPlace in dbCarPlaces)
                 {
                     var carPlaceNumbers = carsResponse.Cars
-                        .Where(x => dbCarPlace.CarNumber == dbCarPlace.CarNumber)
+                        .Where(x => x.CarNumber == dbCarPlace.CarNumber)
                         .SelectMany(x => x.FreePlaces.Split(",").Select(y => y.Trim())).ToList();
 
                     if (dbCarPlace.IsFree && !carPlaceNumbers.Any(x => x == dbCarPlace.CarPlaceNumber))

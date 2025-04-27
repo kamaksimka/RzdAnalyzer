@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RZD.Application.Models;
 using RZD.Application.Services;
 
@@ -26,5 +27,17 @@ namespace RZD.Api.Controllers
         [HttpPost("freePlacesPlot")]
         public async Task<Dictionary<DateTime,int>> GetFreePlacesPlot(TrainRequest request)
             => await _trainService.GetFreePlacesPlot(request);
+
+        [HttpPost("carPlaceTypes")]
+        public async Task<List<CarPlaceTypeModel>> GetCarPlaceTypes(TrainRequest request)
+            => await _trainService.GetCarPlaceTypes(request);
+
+        [HttpPost("minPricePlacesPlot")]
+        public async Task<Dictionary<DateTime, decimal>> GetMinPricePlacesPlot(GetPricePlacesPlotRequest request)
+            => await _trainService.GetMinPricePlacesPlot(request);
+
+        [HttpPost("freePlacesPlotByCarType")]
+        public async Task<Dictionary<DateTime, int>> GetFreePlacesPlotByCarPlaceType(GetPricePlacesPlotRequest request)
+            => await _trainService.GetFreePlacesPlotByCarPlaceType(request);
     }
 }
