@@ -311,7 +311,6 @@ namespace RZD.Application.Services
             carPlace.OnlyNonRefundableTariff = car.OnlyNonRefundableTariff;
             carPlace.PassengerSpecifyingRules = car.PassengerSpecifyingRules;
             carPlace.PlaceReservationType = car.PlaceReservationType;
-            carPlace.PlacesWithConditionalRefundableTariffQuantity = car.PlacesWithConditionalRefundableTariffQuantity;
             carPlace.ServiceClass = car.ServiceClass;
             carPlace.ServiceCost = car.ServiceCost;
             carPlace.Services = car.Services.ToList();
@@ -411,9 +410,6 @@ namespace RZD.Application.Services
 
             if (dbCarPlace.PlaceReservationType != rzdCar.PlaceReservationType)
                 changes[nameof(dbCarPlace.PlaceReservationType)] = dbCarPlace.PlaceReservationType;
-
-            if (dbCarPlace.PlacesWithConditionalRefundableTariffQuantity != rzdCar.PlacesWithConditionalRefundableTariffQuantity)
-                changes[nameof(dbCarPlace.PlacesWithConditionalRefundableTariffQuantity)] = JsonSerializer.Serialize(dbCarPlace.PlacesWithConditionalRefundableTariffQuantity);
 
             if (dbCarPlace.ServiceClass != rzdCar.ServiceClass)
                 changes[nameof(dbCarPlace.ServiceClass)] = dbCarPlace.ServiceClass;
