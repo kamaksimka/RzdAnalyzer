@@ -133,6 +133,28 @@ namespace RZD.Application.Services
                             {
                                 await RefreshCarPlacesAsync(train.OriginStationCode, train.DestinationStationCode, train.DepartureDateTime, train.TrainNumber, dbTrain.Id);
                             }
+                            else
+                            {
+                                var dbCarPlaces = await _ctx.CarPlaces
+                                    .Where(x => x.TrainId == dbTrain.Id && x.IsFree)
+                                    .ToListAsync();
+
+                                foreach (var dbCarPlace in dbCarPlaces) {
+                                    await _ctx.EntityHistories.AddAsync(new EntityHistory()
+                                    {
+                                        EntityTypeId = (int)EntityTypes.CarPlace,
+                                        EntityId = dbCarPlace.Id,
+                                        ChangedAt = DateTimeOffset.UtcNow,
+                                        FieldName = nameof(dbCarPlace.IsFree),
+                                        OldFieldValue = JsonSerializer.Serialize(dbCarPlace.IsFree)
+                                    });
+
+
+                                    dbCarPlace.IsFree = false;
+                                }
+
+                                await _ctx.SaveChangesAsync();
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -177,7 +199,7 @@ namespace RZD.Application.Services
                 foreach (var dbCarPlace in dbCarPlaces)
                 {
                     var carPlaceNumbers = carsResponse.Cars
-                        .Where(x => dbCarPlace.CarNumber == dbCarPlace.CarNumber)
+                        .Where(x => x.CarNumber == dbCarPlace.CarNumber)
                         .SelectMany(x => x.FreePlaces.Split(",").Select(y => y.Trim())).ToList();
 
                     if (dbCarPlace.IsFree && !carPlaceNumbers.Any(x => x == dbCarPlace.CarPlaceNumber))

@@ -8,4 +8,8 @@ export const TrainService = {
   async getTrainGridInitModel(trackedRouteId: number) {
     return await api.post('/api/train/trainGridInitModel', { trackedRouteId });
   },
+
+  async getFreePlacesPlot(trainId: number) {
+    return await api.post('/api/train/freePlacesPlot', { trainId });
+  },
 };

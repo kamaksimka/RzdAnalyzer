@@ -30,7 +30,8 @@
                  :groupIncludeTotalFooter="true"
                  :animateRows="true"
                  :frameworkComponents="frameworkComponents"
-                 @grid-ready="onGridReady"></ag-grid-vue>
+                 @grid-ready="onGridReady"
+                 @row-clicked="onRowClicked"></ag-grid-vue>
   </div>
 </template>
 
@@ -40,6 +41,7 @@
   import { AgGridVue } from 'ag-grid-vue3';
   import { TrainService } from '@/services/trainService';
   import ServiceIconsRenderer from './ServiceIconsRenderer.vue';
+  import { useRouter } from 'vue-router';
 
   export default defineComponent({
     name: 'TrainGrid',
@@ -54,7 +56,7 @@
     },
     setup(props) {
       const selectedDateFrom = ref<string>(new Date().toISOString().split('T')[0]); // Инициализация с текущей датой
-      const selectedDateTo = ref<string>(new Date().toISOString().split('T')[0]); // Инициализация с текущей датой
+      const selectedDateTo = ref<string>(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]); // Инициализация с текущей датой
 
       const minDate = ref<string>('');
       const maxDate = ref<string>('');
@@ -171,6 +173,14 @@
         fetchDateRange();
       });
 
+      const router = useRouter();
+
+      const onRowClicked = (event: any) => {
+        console.log(1);
+        const trainId = event.data.id; // Предположим, у поезда есть поле `id`
+        router.push({ name: 'train-details', params: { id: trainId } });
+      };
+
       return {
         columnDefs,
         defaultColDef,
@@ -184,7 +194,8 @@
         convertMinutesToHours,
         totalTrains,
         minDate,
-        maxDate
+        maxDate,
+        onRowClicked
       };
     },
   });
