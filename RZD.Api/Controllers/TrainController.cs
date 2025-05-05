@@ -36,7 +36,11 @@ namespace RZD.Api.Controllers
         public async Task<Dictionary<DateTime, decimal>> GetMinPricePlacesPlot(GetPricePlacesPlotRequest request)
             => await _trainService.GetMinPricePlacesPlot(request);
 
-        [HttpPost("freePlacesPlotByCarType")]
+        [HttpPost("maxPricePlacesPlot")]
+        public async Task<Dictionary<DateTime, decimal>> GetMaxPricePlacesPlot(GetPricePlacesPlotRequest request)
+            => await _trainService.GetMaxPricePlacesPlot(request);
+
+        [HttpPost("freePlacesByCarTypePlot")]
         public async Task<Dictionary<DateTime, int>> GetFreePlacesPlotByCarPlaceType(GetPricePlacesPlotRequest request)
             => await _trainService.GetFreePlacesPlotByCarPlaceType(request);
 

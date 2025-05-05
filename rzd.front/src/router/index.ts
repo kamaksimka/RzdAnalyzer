@@ -7,6 +7,7 @@ import FeedbackPage from '@/pages/FeedbackPage.vue';
 import RouteStatisticPage from '@/pages/RouteStatisticPage.vue'
 import TrainDetails from '@/pages/TrainDetails.vue'
 import FreePlacesPlot from '@/pages/FreePlacesPlot.vue'
+import PricePlot from '@/pages/PricePlot.vue'
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/train/:trainId/free-places',
     name: 'FreePlacesPlot',
     component: FreePlacesPlot
+  },
+  {
+    path: '/train/:trainId/price',
+    name: 'PricePlot',
+    component: PricePlot
   }
 ];
 

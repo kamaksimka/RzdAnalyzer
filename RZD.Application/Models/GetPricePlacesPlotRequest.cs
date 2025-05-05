@@ -2,6 +2,6 @@
 {
     public class GetPricePlacesPlotRequest:TrainRequest
     {
-        public CarPlaceTypeModel CarPlaceType { get; set; }
+        public string CarType { get; set; }
     }
 }

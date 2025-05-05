@@ -3,6 +3,7 @@ using RZD.Application.Helpers;
 using RZD.Application.Models;
 using RZD.Common.Enums;
 using RZD.Database;
+using RZD.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -138,14 +139,14 @@ namespace RZD.Application.Services
             return carPlaceTypes;
         }
 
-
         public async Task<Dictionary<DateTime, decimal>> GetMinPricePlacesPlot(GetPricePlacesPlotRequest request)
         {
+            var train = _context.Trains.First(x => x.Id  == request.TrainId);
+
+
             var historyCarPlaces = (await (from cp in _context.CarPlaces
                                            join eh in _context.EntityHistories on cp.Id equals eh.EntityId
-                                           where cp.TrainId == request.TrainId && cp.CarPlaceType == request.CarPlaceType.CarPlaceType
-                                               && cp.CarSubType == request.CarPlaceType.CarSubType && cp.ServiceClass == request.CarPlaceType.ServiceClass
-                                               && cp.CarType == request.CarPlaceType.CarType
+                                           where cp.TrainId == request.TrainId && cp.CarType == request.CarType
                                                && eh.EntityTypeId == (int)EntityTypes.CarPlace && (eh.FieldName == nameof(cp.MinPrice))
                                            select new
                                            {
@@ -164,38 +165,111 @@ namespace RZD.Application.Services
                                   .ToList();
 
             var trainCarPlaces = _context.CarPlaces
-                .Where(x => x.TrainId == request.TrainId && x.IsFree
-                    && x.CarSubType == request.CarPlaceType.CarSubType && x.ServiceClass == request.CarPlaceType.ServiceClass
-                    && x.CarPlaceType == request.CarPlaceType.CarPlaceType && x.CarType == request.CarPlaceType.CarType)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.MinPrice,
-                })
+                .Where(x => x.TrainId == request.TrainId
+                    && x.CarType == request.CarType)
                 .ToList();
 
             var minPricePlacesPlot = new Dictionary<DateTime, decimal>();
 
             var now = DateTimeOffset.Now.FromMoscowTime().RoundHour();
 
-            minPricePlacesPlot.Add(now, trainCarPlaces.Select(x => x.MinPrice).Min());
+            minPricePlacesPlot.Add(now, trainCarPlaces.Where(x => x.IsFree).Select(x => x.MinPrice).DefaultIfEmpty().Min());
 
             foreach (var item in historyCarPlaces)
             {
                 var date = item.CurrentUntil.FromMoscowTime();
 
+                var trainCarPlace = trainCarPlaces.FirstOrDefault(x => x.Id == item.Id);
+
+                if (trainCarPlace != null)
+                {
+                    trainCarPlace.MinPrice = item.MinPrice;
+                    trainCarPlace.IsFree = true;
+                }
+
                 if (minPricePlacesPlot.ContainsKey(date))
                 {
-                    minPricePlacesPlot[date] = item.MinPrice;
+                    minPricePlacesPlot[date] = trainCarPlaces.Where(x => x.IsFree).Select(x => x.MinPrice).DefaultIfEmpty().Min();
                 }
                 else
                 {
-                    minPricePlacesPlot.Add(date, item.MinPrice);
+                    var minPrice = trainCarPlaces.Where(x => x.IsFree).Select(x => x.MinPrice).DefaultIfEmpty().Min();
+                    if (!minPricePlacesPlot.Any() || minPricePlacesPlot.Last().Value != minPrice)
+                        minPricePlacesPlot.Add(date, minPrice);
                 }
             }
 
+            if (minPricePlacesPlot.Any())
+                minPricePlacesPlot.Add(train.CreatedDate.FromMoscowTime().RoundHour(), minPricePlacesPlot.Last().Value);
 
-            return minPricePlacesPlot;
+            return minPricePlacesPlot.OrderBy(x => x.Key).ToDictionary(k => k.Key, v => v.Value);
+
+        }
+
+        public async Task<Dictionary<DateTime, decimal>> GetMaxPricePlacesPlot(GetPricePlacesPlotRequest request)
+        {
+            var train = _context.Trains.First(x => x.Id == request.TrainId);
+
+            var historyCarPlaces = (await (from cp in _context.CarPlaces
+                                           join eh in _context.EntityHistories on cp.Id equals eh.EntityId
+                                           where cp.TrainId == request.TrainId && cp.CarType == request.CarType
+                                               && eh.EntityTypeId == (int)EntityTypes.CarPlace && (eh.FieldName == nameof(cp.MaxPrice))
+                                           select new
+                                           {
+                                               cp.Id,
+                                               eh.OldFieldValue,
+                                               eh.ChangedAt,
+                                           })
+                                  .OrderByDescending(x => x.ChangedAt)
+                                  .ToListAsync())
+                                  .Select(x => new
+                                  {
+                                      x.Id,
+                                      MaxPrice = JsonSerializer.Deserialize<decimal>(x.OldFieldValue),
+                                      CurrentUntil = x.ChangedAt,
+                                  })
+                                  .ToList();
+
+            var trainCarPlaces = _context.CarPlaces
+                .Where(x => x.TrainId == request.TrainId
+                    && x.CarType == request.CarType)
+                .ToList();
+
+            var maxPricePlacesPlot = new Dictionary<DateTime, decimal>();
+
+            var now = DateTimeOffset.Now.FromMoscowTime().RoundHour();
+
+            maxPricePlacesPlot.Add(now, trainCarPlaces.Where(x => x.IsFree).Select(x => x.MaxPrice).DefaultIfEmpty().Max());
+
+
+            foreach (var item in historyCarPlaces)
+            {
+                var date = item.CurrentUntil.FromMoscowTime();
+
+                var trainCarPlace = trainCarPlaces.FirstOrDefault(x => x.Id == item.Id);
+
+                if (trainCarPlace != null)
+                {
+                    trainCarPlace.MaxPrice = item.MaxPrice;
+                    trainCarPlace.IsFree = true;
+                }
+
+                if (maxPricePlacesPlot.ContainsKey(date))
+                {
+                    maxPricePlacesPlot[date] = trainCarPlaces.Where(x => x.IsFree).Select(x => x.MaxPrice).DefaultIfEmpty().Max();
+                }
+                else
+                {
+                    var maxPrice = trainCarPlaces.Where(x => x.IsFree).Select(x => x.MaxPrice).DefaultIfEmpty().Max();
+                    if (!maxPricePlacesPlot.Any() || maxPricePlacesPlot.Last().Value != maxPrice)
+                        maxPricePlacesPlot.Add(date, maxPrice);
+                }
+            }
+
+            if (maxPricePlacesPlot.Any())
+                maxPricePlacesPlot.Add(train.CreatedDate.FromMoscowTime().RoundHour(), maxPricePlacesPlot.Last().Value);
+
+            return maxPricePlacesPlot.OrderBy(x => x.Key).ToDictionary(k => k.Key,v => v.Value);
 
         }
 
@@ -206,10 +280,7 @@ namespace RZD.Application.Services
             var historyCarPlaces = (await (from cp in _context.CarPlaces
                                            join eh in _context.EntityHistories on cp.Id equals eh.EntityId
                                            where cp.TrainId == request.TrainId 
-                                               && (request.CarPlaceType.CarPlaceType == null || cp.CarPlaceType == request.CarPlaceType.CarPlaceType )
-                                               && (request.CarPlaceType.CarType == null || cp.CarType == request.CarPlaceType.CarType)
-                                               && (request.CarPlaceType.CarSubType == null || cp.CarSubType == request.CarPlaceType.CarSubType)
-                                               && (request.CarPlaceType.ServiceClass == null || cp.ServiceClass == request.CarPlaceType.ServiceClass)
+                                               && (request.CarType == null || cp.CarType == request.CarType)
                                            && eh.EntityTypeId == (int)EntityTypes.CarPlace && eh.FieldName == nameof(cp.IsFree)
                                            select new
                                            {
@@ -229,10 +300,7 @@ namespace RZD.Application.Services
 
             var trainCarPlaces = _context.CarPlaces
                 .Where(x => x.TrainId == request.TrainId
-                 && (request.CarPlaceType.CarPlaceType == null || x.CarPlaceType == request.CarPlaceType.CarPlaceType)
-                                               && (request.CarPlaceType.CarType == null || x.CarType == request.CarPlaceType.CarType)
-                                               && (request.CarPlaceType.CarSubType == null || x.CarSubType == request.CarPlaceType.CarSubType)
-                                               && (request.CarPlaceType.ServiceClass == null || x.ServiceClass == request.CarPlaceType.ServiceClass))
+                 && (request.CarType == null || x.CarType == request.CarType))
                 .Select(x => new
                 {
                     x.Id,

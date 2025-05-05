@@ -450,7 +450,6 @@ namespace RZD.Application.Services
 
         private async Task UpdateDbTrainAsync(Train dbTrain, RzdTrain train)
         {
-            dbTrain.CreatedDate = DateTimeOffset.Now.ToUniversalTime();
             dbTrain.ArrivalDateTime = new DateTimeOffset(train.ArrivalDateTime, TimeSpan.FromHours(3)).ToUniversalTime();
             dbTrain.ArrivalStopTime = train.ArrivalStopTime;
             dbTrain.CarServices = train.CarServices;
