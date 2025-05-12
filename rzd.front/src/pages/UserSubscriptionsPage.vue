@@ -7,19 +7,24 @@
         <thead>
           <tr>
             <th>Маршрут</th>
+            <th>Регионы</th>
             <th>Прибытие</th>
             <th>Отправление</th>
             <th>Типы вагонов</th>
+            <th>Сервисы</th>
             <th>Верхние</th>
             <th>Нижние</th>
+            <th>Любое место</th>
             <th>Время в пути</th>
             <th>Цена</th>
             <th>Email</th>
+            <th>Завершена</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="sub in subscriptions" :key="sub.trackedRouteId">
             <td>{{ sub.originStationName }} - {{ sub.destinationStationName }}</td>
+            <td>{{ sub.originRegion }} - {{ sub.destinationRegion }}</td>
             <td>
               {{ formatDate(sub.startArrivalTime) }} - {{ formatDate(sub.endArrivalTime) }}
             </td>
@@ -27,13 +32,16 @@
               {{ formatDate(sub.startDepartureTime) }} - {{ formatDate(sub.endDepartureTime) }}
             </td>
             <td>{{ sub.carTypes?.join(', ') || '—' }}</td>
+            <td>{{ sub.carServices?.join(', ') || '—' }}</td>
             <td>{{ sub.isUpperSeat ? 'Да' : 'Нет' }}</td>
             <td>{{ sub.isLowerSeat ? 'Да' : 'Нет' }}</td>
+            <td>{{ sub.isAnySeat ? 'Да' : 'Нет' }}</td>
             <td>{{ formatTravelTime(sub.travelTimeInMinutes) }}</td>
             <td>
               {{ formatPrice(sub.minPrice) }} - {{ formatPrice(sub.maxPrice) }}
             </td>
             <td>{{ sub.userEmail }}</td>
+            <td>{{ sub.isComplete ? 'Да' : 'Нет' }}</td>
           </tr>
         </tbody>
       </table>
@@ -46,45 +54,49 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+  import { defineComponent, onMounted, ref } from 'vue';
   import { TrainService } from '@/services/trainService';
 
-export default defineComponent({
-  name: 'UserSubscriptionsPage',
-  setup() {
-    const subscriptions = ref<any[]>([]);
+  export default defineComponent({
+    name: 'UserSubscriptionsPage',
+    setup() {
+      const subscriptions = ref<any[]>([]);
 
-    const fetchSubscriptions = async () => {
+      const fetchSubscriptions = async () => {
         const res = await TrainService.subscriptions();
         subscriptions.value = res.data;
-      
-    };
+      };
 
-    const formatDate = (date: string | null) => {
-      if (!date) return '—';
-      return new Date(date).toLocaleString('ru-RU');
-    };
+      const formatDate = (date: string | null) => {
+        if (!date) return '—';
+        return new Date(date).toLocaleString('ru-RU');
+      };
 
-    const formatPrice = (price: number | null) => {
-      if (price == null) return '—';
-      return price.toLocaleString('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-      });
-    };
+      const formatPrice = (price: number | null) => {
+        if (price == null) return '—';
+        return price.toLocaleString('ru-RU', {
+          style: 'currency',
+          currency: 'RUB',
+        });
+      };
 
-    const formatTravelTime = (minutes: number | null) => {
-      if (!minutes) return '—';
-      const h = Math.floor(minutes / 60);
-      const m = minutes % 60;
-      return `${h} ч ${m} мин`;
-    };
+      const formatTravelTime = (minutes: number | null) => {
+        if (!minutes) return '—';
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h} ч ${m} мин`;
+      };
 
-    onMounted(fetchSubscriptions);
+      onMounted(fetchSubscriptions);
 
-    return { subscriptions, formatDate, formatPrice, formatTravelTime };
-  },
-});
+      return {
+        subscriptions,
+        formatDate,
+        formatPrice,
+        formatTravelTime,
+      };
+    },
+  });
 </script>
 
 <style scoped>

@@ -94,7 +94,7 @@
                      :paginationPageSize="10"
                      :animateRows="true"
                      @grid-ready="onGridReady"
-                     :components="{ ServiceIconsRenderer }" />
+                     :frameworkComponents="frameworkComponents" />
       </div>
       <div v-else class="no-trains">
         <p>Поездов не найдено по заданным фильтрам.</p>
@@ -138,6 +138,11 @@
       const routes = ref<any[]>([]);
       const rowData = ref<any[]>([]);
       const totalTrains = ref<number>(0);
+
+
+      const frameworkComponents = {
+        serviceIconsRenderer: ServiceIconsRenderer
+      };
 
       const columnDefs = ref([
         { field: 'trainNumber', headerName: '№ Поезда' },
@@ -277,6 +282,7 @@
         totalTrains,
         onGridReady,
         subscribeToTrains,
+        frameworkComponents
       };
     },
   });
