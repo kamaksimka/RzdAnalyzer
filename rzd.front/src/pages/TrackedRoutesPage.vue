@@ -197,18 +197,18 @@
   });
 </script>
 
-
 <style scoped>
+  /* Основные стили */
   h1 {
-    color: #282c34;
-    font-size: 2rem;
+    color: #E60012; /* Красный цвет РЖД */
+    font-size: 2.2rem;
     margin-bottom: 20px;
     text-align: center;
+    font-family: 'Arial', sans-serif;
   }
 
-  /* Кнопка для создания маршрута */
   button {
-    background-color: #4CAF50;
+    background-color: #E60012; /* Красный цвет для кнопок */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -219,55 +219,45 @@
   }
 
     button:hover {
-      background-color: #45a049;
+      background-color: #B20000; /* Темно-красный при наведении */
       transform: scale(1.05);
     }
 
-    /* Кнопка удаления маршрута */
     button.delete {
-      background-color: #f44336;
+      background-color: #D32F2F;
       color: white;
-      border: none;
-      padding: 8px 16px;
-      font-size: 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
       button.delete:hover {
-        background-color: #d32f2f;
-        transform: scale(1.05);
+        background-color: #B71C1C;
       }
 
-  /* Стили для таблицы */
   table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 30px;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
   }
 
-  th,
-  td {
+  th, td {
     padding: 12px 15px;
     text-align: left;
     font-size: 1rem;
+    color: #333;
   }
 
   th {
-    background-color: #f4f4f9;
+    background-color: #f1f1f1;
     font-weight: bold;
-    color: #333;
     text-transform: uppercase;
   }
 
   td {
     background-color: #fff;
     border-bottom: 1px solid #ddd;
-    color: #555;
   }
 
   tr:nth-child(even) td {
@@ -278,7 +268,7 @@
     background-color: #f1f1f1;
   }
 
-  /* Форма для создания маршрута */
+  /* Формы */
   .form-container {
     margin-top: 30px;
     background-color: #f9f9f9;
@@ -287,18 +277,6 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     max-width: 500px;
     margin: 0 auto;
-  }
-
-  form div {
-    margin-bottom: 15px;
-  }
-
-  label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    display: block;
-    margin-bottom: 5px;
   }
 
   input {
@@ -312,24 +290,8 @@
   }
 
     input:focus {
-      border-color: #4CAF50;
+      border-color: #E60012;
       outline: none;
-    }
-
-  button[type='submit'] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-  }
-
-    button[type='submit']:hover {
-      background-color: #45a049;
     }
 
   .suggestions-list {
@@ -355,13 +317,7 @@
         background-color: #f1f1f1;
       }
 
-  form div {
-    margin-bottom: 15px;
-    position: relative;
-  }
-
   .route-row {
-    cursor: pointer; /* Курсор меняется на "руку" при наведении */
+    cursor: pointer;
   }
 </style>
-

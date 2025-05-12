@@ -6,53 +6,54 @@
       {{ routeStatistic?.originStationName }} ({{ routeStatistic?.originRegion }}) →
       {{ routeStatistic?.destinationStationName }} ({{ routeStatistic?.destinationRegion }})
     </h2>
+
     <div class="tabs">
       <button :class="{ active: activeTab === 'stat' }" @click="activeTab = 'stat'">Общая статистика</button>
       <button :class="{ active: activeTab === 'trains' }" @click="activeTab = 'trains'">Список поездов</button>
     </div>
 
     <!-- Общая статистика -->
-    <div v-if="activeTab === 'stat' && routeStatistic" class="statistic-card">
-      <div class="statistic-details">
-        <div class="statistic-item">
-          <font-awesome-icon icon="calendar-alt" class="icon" />
-          <strong>Дата начала отслеживания:</strong> {{ formatDate(routeStatistic?.startTrackedDate) }}
-        </div>
-        <div class="statistic-item">
-          <font-awesome-icon icon="route" class="icon" />
-          <strong>Дистанция:</strong> {{ routeStatistic?.avarageTripDistance?.toFixed(1) }} км
-        </div>
-        <div class="statistic-item">
-          <font-awesome-icon icon="subway" class="icon" />
-          <strong>Количество поездов:</strong> {{ routeStatistic?.numberTrains }}
-        </div>
-        <div class="statistic-item">
-          <font-awesome-icon icon="chair" class="icon" />
-          <strong>Количество мест:</strong> {{ routeStatistic?.numberCarPlaces }}
-        </div>
-        <div class="statistic-item">
-          <font-awesome-icon icon="arrow-up" class="icon" />
-          <strong>Максимальная цена:</strong> {{routeStatistic? formatCurrency(routeStatistic.maxPrice):0 }}
-        </div>
-        <div class="statistic-item">
-          <font-awesome-icon icon="arrow-down" class="icon" />
-          <strong>Минимальная цена:</strong> {{ routeStatistic? formatCurrency(routeStatistic.minPrice):0 }}
-        </div>
-        <div class="statistic-item">
-          <font-awesome-icon icon="bolt" class="icon" />
-          <strong>Самый быстрый поезд:</strong> {{ routeStatistic? formatTime(routeStatistic.fastestTrain):"" }}
-        </div>
-
-        <div class="statistic-item">
-          <font-awesome-icon icon="hourglass-end" class="icon" />
-          <strong>Самый медленный поезд:</strong> {{ routeStatistic? formatTime(routeStatistic.slowestTrain):"" }}
+    <div v-if="activeTab === 'stat' && routeStatistic" class="statistic-wrapper">
+      <div class="statistic-card">
+        <div class="statistic-details">
+          <div class="statistic-item">
+            <font-awesome-icon icon="calendar-alt" class="icon" />
+            <strong>Дата начала отслеживания:</strong> {{ formatDate(routeStatistic?.startTrackedDate) }}
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="route" class="icon" />
+            <strong>Дистанция:</strong> {{ routeStatistic?.avarageTripDistance?.toFixed(1) }} км
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="subway" class="icon" />
+            <strong>Количество поездов:</strong> {{ routeStatistic?.numberTrains }}
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="chair" class="icon" />
+            <strong>Количество мест:</strong> {{ routeStatistic?.numberCarPlaces }}
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="arrow-up" class="icon" />
+            <strong>Максимальная цена:</strong> {{ formatCurrency(routeStatistic.maxPrice) }}
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="arrow-down" class="icon" />
+            <strong>Минимальная цена:</strong> {{ formatCurrency(routeStatistic.minPrice) }}
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="bolt" class="icon" />
+            <strong>Самый быстрый поезд:</strong> {{ formatTime(routeStatistic.fastestTrain) }}
+          </div>
+          <div class="statistic-item">
+            <font-awesome-icon icon="hourglass-end" class="icon" />
+            <strong>Самый медленный поезд:</strong> {{ formatTime(routeStatistic.slowestTrain) }}
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Список поездов через ag-Grid -->
+    <!-- Список поездов -->
     <div v-if="activeTab === 'trains'" class="train-grid">
-      <!-- Используем компонент TrainGrid.vue -->
       <TrainGrid :trackedRouteId="trackedRouteId" />
     </div>
   </div>
@@ -91,20 +92,6 @@
     faRoute
   );
 
-  interface RouteStatistic {
-    startTrackedDate: string;
-    originStationName: string;
-    originRegion: string;
-    destinationStationName: string;
-    destinationRegion: string;
-    numberTrains: number;
-    numberCarPlaces: number;
-    maxPrice: number;
-    minPrice: number;
-    fastestTrain: string;
-    slowestTrain: string;
-  }
-
   export default defineComponent({
     name: 'RouteStatisticPage',
     components: {
@@ -122,33 +109,18 @@
       };
 
       const formatCurrency = (value: number | null): string => {
-        return value != null ? value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' }) : 'Не указано';
+        return value != null
+          ? value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
+          : 'Не указано';
       };
 
       const formatTime = (time: string | null): string => {
-        if (!time) {
-          return 'Не указано';
-        }
-
-        const timeParts = time.split(' '); // Разделяем по пробелу, если есть
+        if (!time) return 'Не указано';
+        const timeParts = time.split(' ');
         const [dayPart, timePart] = timeParts.length === 2 ? timeParts : [null, time];
-
-        // Разбираем день, если он есть
         const days = dayPart ? parseInt(dayPart, 10) : 0;
-
-        // Разбираем время (часы, минуты, секунды)
-        const [hours, minutes, seconds] = timePart.split(':').map(Number);
-
-        // Формируем финальный результат
-        let result = '';
-
-        if (days > 0) {
-          result += `${days}д `;
-        }
-
-        result += `${hours}ч ${minutes}м`;
-
-        return result;
+        const [hours, minutes] = timePart.split(':').map(Number);
+        return `${days > 0 ? `${days}д ` : ''}${hours}ч ${minutes}м`;
       };
 
       onMounted(async () => {
@@ -164,119 +136,91 @@
         formatDate,
         formatCurrency,
         formatTime,
-        trackedRouteId,
+        trackedRouteId
       };
-    },
+    }
   });
 </script>
 
 <style scoped>
   .route-statistic {
-    margin: 20px;
+    margin: 40px auto;
+    max-width: 1200px; /* увеличено с 1000 */
     font-family: Arial, sans-serif;
+    color: #2D2D2D;
   }
 
-  h1 {
-    text-align: center;
-    color: #333;
-    font-size: 2rem;
-    margin-bottom: 20px;
+  .statistic-card {
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px; /* было 800px */
+    width: 100%;
+    border: 1px solid #E0E0E0;
   }
 
-  h2 {
+  h1, h2 {
     text-align: center;
-    color: #333;
-    font-size: 1.6rem;
     margin-bottom: 20px;
   }
 
   .tabs {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 
     .tabs button {
       padding: 10px 20px;
       margin: 0 10px;
-      background-color: #eee;
+      background-color: #eeeeee;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
       .tabs button.active {
-        background-color: #4CAF50;
+        background-color: #D52B1E;
         color: white;
       }
 
-  .statistic-card {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    margin: 0 auto;
-  }
+      .tabs button:hover {
+        background-color: #BB1E16;
+        color: white;
+      }
 
-    .statistic-card h2 {
-      text-align: center;
-      color: #333;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
+  .statistic-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
 
   .statistic-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    font-size: 1rem;
   }
 
   .statistic-item {
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: #F8F8F8;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
   }
+
+    .statistic-item .icon {
+      color: #D52B1E;
+      margin-right: 10px;
+      font-size: 18px;
+    }
 
     .statistic-item strong {
-      color: #333;
-      font-weight: bold;
+      margin-right: 5px;
+      color: #000;
     }
-
-
-  .icon {
-    margin-right: 8px;
-    color: #555;
-  }
-
-  .train-table {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-
-    .tabs button {
-      padding: 10px 20px;
-      margin: 0 10px;
-      background-color: #eee;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-      .tabs button.active {
-        background-color: #4caf50;
-        color: white;
-      }
 </style>

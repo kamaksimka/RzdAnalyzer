@@ -62,8 +62,8 @@
   });
 </script>
 
-
 <style scoped>
+  /* Контейнер для всей страницы */
   .login-container {
     display: flex;
     justify-content: center;
@@ -73,6 +73,7 @@
     padding: 20px;
   }
 
+  /* Карточка формы входа */
   .form-card {
     background-color: white;
     padding: 30px 40px;
@@ -82,12 +83,16 @@
     width: 100%;
   }
 
+  /* Заголовок формы */
   h2 {
     text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    color: #E60012; /* Красный цвет РЖД */
+    font-size: 1.8rem;
+    font-family: 'Arial', sans-serif;
   }
 
+  /* Стили для каждого поля формы */
   .form-group {
     margin-bottom: 15px;
   }
@@ -101,7 +106,7 @@
 
   input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     font-size: 1rem;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -110,15 +115,16 @@
   }
 
     input:focus {
-      border-color: #4CAF50;
+      border-color: #E60012; /* Красный цвет РЖД */
       outline: none;
       background-color: #fff;
     }
 
+  /* Кнопка входа */
   button {
     width: 100%;
     padding: 12px;
-    background-color: #4CAF50;
+    background-color: #E60012; /* Красный цвет РЖД */
     color: white;
     font-size: 1rem;
     font-weight: 600;
@@ -129,13 +135,14 @@
   }
 
     button:hover {
-      background-color: #45a049;
+      background-color: #B20000; /* Темно-красный при наведении */
       transform: scale(1.02);
     }
 
+  /* Стили для сообщения об ошибке */
   .error {
     margin-top: 15px;
-    color: #d32f2f;
+    color: #d32f2f; /* Красный для ошибок */
     text-align: center;
     font-weight: 500;
   }

@@ -572,6 +572,86 @@ namespace RZD.Database.Migrations
                     b.ToTable("statistics", (string)null);
                 });
 
+            modelBuilder.Entity("RZD.Database.Models.Subscription", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.PrimitiveCollection<List<string>>("CarServices")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("car_services");
+
+                    b.PrimitiveCollection<List<string>>("CarTypes")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("car_types");
+
+                    b.Property<DateTime>("EndArrivalTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_arrival_time");
+
+                    b.Property<DateTime?>("EndDepartureTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_departure_time");
+
+                    b.Property<bool>("IsComplete")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_complete");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_delete");
+
+                    b.Property<bool>("IsLowerSeat")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_lower_seat");
+
+                    b.Property<bool>("IsUpperSeat")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_upper_seat");
+
+                    b.Property<decimal?>("MaxPrice")
+                        .HasColumnType("numeric")
+                        .HasColumnName("max_price");
+
+                    b.Property<decimal?>("MinPrice")
+                        .HasColumnType("numeric")
+                        .HasColumnName("min_price");
+
+                    b.Property<DateTime>("StartArrivalTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_arrival_time");
+
+                    b.Property<DateTime?>("StartDepartureTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_departure_time");
+
+                    b.Property<long>("TrackedRouteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("tracked_route_id");
+
+                    b.Property<int?>("TravelTimeInMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("travel_time_in_minutes");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_subscriptions");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_subscriptions_user_id");
+
+                    b.ToTable("subscriptions", (string)null);
+                });
+
             modelBuilder.Entity("RZD.Database.Models.TrackedRoute", b =>
                 {
                     b.Property<long>("Id")
@@ -929,6 +1009,18 @@ namespace RZD.Database.Migrations
                         .HasConstraintName("fk_route_stops_routes_route_id");
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("RZD.Database.Models.Subscription", b =>
+                {
+                    b.HasOne("RZD.Database.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_subscriptions_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RZD.Database.Models.Train", b =>

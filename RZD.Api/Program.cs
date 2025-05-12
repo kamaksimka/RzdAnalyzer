@@ -48,6 +48,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TrackedRouteService>();
 builder.Services.AddScoped<FeedbackService>();
 builder.Services.AddScoped<TrainService>();
+builder.Services.AddScoped<SubscriptionService>();
 
 
 var jwtConfig = builder.Configuration.GetSection(JwtConfig.Section).Get<JwtConfig>()!;

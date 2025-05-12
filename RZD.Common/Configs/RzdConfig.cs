@@ -16,5 +16,10 @@ namespace RZD.Common.Configs
 
         public int NumberOfDay { get; set; }
 
+        public string NotifyJobSchedule { get; set; } = null!;
+        public string ModelAIUrl { get; set; } = null!;
+
+
+
     }
 }

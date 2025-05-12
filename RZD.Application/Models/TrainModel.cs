@@ -21,9 +21,8 @@ namespace RZD.Application.Models
         public int TripDistance { get; set; }
         public decimal TripDuration { get; set; }
 
-
-        public Dictionary<string, List<EntityHistoryModel>> HistoryOfChanges { get; set; }
-        public List<CarPlaceModel> CarPlaces { get; set; }
+        public string ArrivalStation {get; set;}
+        public string DepartureStation { get; set;}
 
     }
 }

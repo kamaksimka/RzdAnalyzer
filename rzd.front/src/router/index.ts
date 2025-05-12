@@ -8,6 +8,8 @@ import RouteStatisticPage from '@/pages/RouteStatisticPage.vue'
 import TrainDetails from '@/pages/TrainDetails.vue'
 import FreePlacesPlot from '@/pages/FreePlacesPlot.vue'
 import PricePlot from '@/pages/PricePlot.vue'
+import PickUpTrainPage from '@/pages/PickUpTrainPage.vue'
+import UserSubscriptionsPage from '@/pages/UserSubscriptionsPage.vue'
 
 const routes = [
   {
@@ -54,6 +56,16 @@ const routes = [
     path: '/train/:trainId/price',
     name: 'PricePlot',
     component: PricePlot
+  },
+  {
+    path: '/pickup',
+    name: 'PickUpTrain',
+    component: PickUpTrainPage
+  },
+  {
+    path: '/subscriptions',
+    name: 'Subscriptions',
+    component: UserSubscriptionsPage
   }
 ];
 

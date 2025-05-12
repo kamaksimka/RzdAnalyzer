@@ -142,11 +142,13 @@
     text-align: center;
     font-size: 2rem;
     margin-bottom: 20px;
+    color: #E60012; /* Красный цвет РЖД */
   }
 
   h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
+    color: #E60012; /* Красный цвет РЖД */
   }
 
   form {
@@ -165,7 +167,7 @@
   }
 
   button.submit-btn {
-    background-color: #4caf50;
+    background-color: #E60012; /* Красный цвет РЖД */
     color: white;
     padding: 10px 20px;
     font-size: 1rem;
@@ -176,12 +178,12 @@
   }
 
     button.submit-btn:hover {
-      background-color: #45a049;
+      background-color: #B20000; /* Темно-красный при наведении */
     }
 
   /* Кнопка для сброса формы */
   button.reset-btn {
-    background-color: #4caf50;
+    background-color: #E60012; /* Красный цвет РЖД */
     color: white;
     padding: 10px 20px;
     font-size: 1rem;
@@ -192,7 +194,7 @@
   }
 
     button.reset-btn:hover {
-      background-color: #45a049;
+      background-color: #B20000; /* Темно-красный при наведении */
     }
 
   .feedback-table {
@@ -210,6 +212,7 @@
 
     .feedback-table th {
       background-color: #f4f4f9;
+      color: #333;
     }
 
     .feedback-table tr:nth-child(even) {
@@ -224,7 +227,7 @@
   .success-message {
     margin-top: 15px;
     padding: 10px;
-    background-color: #4caf50;
+    background-color: #E60012; /* Красный цвет РЖД */
     color: white;
     border-radius: 5px;
     text-align: center;

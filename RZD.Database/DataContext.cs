@@ -28,6 +28,7 @@ namespace RZD.Database
         public DbSet<TrackedRoute> TrackedRoutes { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
 
         public DataContext(IOptions<RzdConfig> config)
         {

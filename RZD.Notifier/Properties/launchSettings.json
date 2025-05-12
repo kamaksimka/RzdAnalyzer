@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RZD.Notifier": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

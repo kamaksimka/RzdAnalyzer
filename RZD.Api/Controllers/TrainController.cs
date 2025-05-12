@@ -7,7 +7,7 @@ namespace RZD.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TrainController
+    public class TrainController: ControllerBase
     {
         private readonly TrainService _trainService;
 
@@ -33,19 +33,23 @@ namespace RZD.Api.Controllers
             => await _trainService.GetCarPlaceTypes(request);
 
         [HttpPost("minPricePlacesPlot")]
-        public async Task<Dictionary<DateTime, decimal>> GetMinPricePlacesPlot(GetPricePlacesPlotRequest request)
+        public async Task<Dictionary<DateTime, decimal>> GetMinPricePlacesPlot(CarPlaceGroupingRequest request)
             => await _trainService.GetMinPricePlacesPlot(request);
 
         [HttpPost("maxPricePlacesPlot")]
-        public async Task<Dictionary<DateTime, decimal>> GetMaxPricePlacesPlot(GetPricePlacesPlotRequest request)
+        public async Task<Dictionary<DateTime, decimal>> GetMaxPricePlacesPlot(CarPlaceGroupingRequest request)
             => await _trainService.GetMaxPricePlacesPlot(request);
 
         [HttpPost("freePlacesByCarTypePlot")]
-        public async Task<Dictionary<DateTime, int>> GetFreePlacesPlotByCarPlaceType(GetPricePlacesPlotRequest request)
+        public async Task<Dictionary<DateTime, int>> GetFreePlacesPlotByCarPlaceType(CarPlaceGroupingRequest request)
             => await _trainService.GetFreePlacesPlotByCarPlaceType(request);
 
         [HttpPost("train")]
         public async Task<TrainModel> GetTrainAsync([FromBody] TrainRequest request)
             => await _trainService.GetTrainAsync(request);
+
+        [HttpPost("pickup")]
+        public async Task<List<TrainTableModel>> PickUpTrainAsync([FromBody] PickUpTrainRequest request)
+            => await _trainService.PickUpTrainAsync(request);
     }
 }
