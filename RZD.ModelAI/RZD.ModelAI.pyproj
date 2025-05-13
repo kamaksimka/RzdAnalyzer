@@ -32,9 +32,11 @@
     <Folder Include="models\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Dockerfile" />
     <Content Include="models\lgb_model_7_freePlaces.txt" />
     <Content Include="models\lgb_model_7_maxPrice.txt" />
     <Content Include="models\lgb_model_7_minPrice.txt" />
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

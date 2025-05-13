@@ -48,6 +48,13 @@ services:
     env_file:
       - .env
     restart: always  
+   
+  model-ai:
+    container_name: rzd-model-ai
+    build:
+      context: .
+      dockerfile: 'RZD.ModelAI/Dockerfile'
+    restart: always  
 
   db:
     image: postgres:17.4

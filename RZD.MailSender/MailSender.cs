@@ -6,34 +6,28 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using RZD.Common.Configs;
 
 namespace RZD.MailSender
 {
     public class MailSender
     {
-        private readonly string _smtpHost;
-        private readonly int _smtpPort;
-        private readonly string _smtpUser;
-        private readonly string _smtpPass;
-        private readonly string _from;
+        private readonly MailSenderConfig _mailSenderConfig;
 
-        public MailSender(string smtpHost, int smtpPort, string smtpUser, string smtpPass, string from)
+        public MailSender(IOptions<MailSenderConfig> mailSenderConfig)
         {
-            _smtpHost = smtpHost;
-            _smtpPort = smtpPort;
-            _smtpUser = smtpUser;
-            _smtpPass = smtpPass;
-            _from = from;
+            _mailSenderConfig = mailSenderConfig.Value;
         }
 
         public void SendEmail(EmailMessage message)
         {
-            using (var client = new SmtpClient(_smtpHost, _smtpPort))
+            using (var client = new SmtpClient(_mailSenderConfig.SmtpHost, _mailSenderConfig.SmtpPort))
             {
                 client.EnableSsl = true;
-                client.Credentials = new NetworkCredential(_smtpUser, _smtpPass);
+                client.Credentials = new NetworkCredential(_mailSenderConfig.SmtpUser, _mailSenderConfig.SmtpPass);
 
-                var mailMessage = new MailMessage(_from, message.To, message.Subject, message.Body)
+                var mailMessage = new MailMessage(_mailSenderConfig.From, message.To, message.Subject, message.Body)
                 {
                     IsBodyHtml = message.IsHtml
                 };
